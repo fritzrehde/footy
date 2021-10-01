@@ -1,0 +1,13 @@
+Supported leagues:
+	cl: Champions League (International)
+	pl: Premier League (England)
+	ch: Championship (England)
+	bl: Bundesliga (Germany)
+	ll: La Liga (Spain)
+	sa: Serie A (Italy)
+	lo: Ligue 1 (France)
+	er: Eredivisie (Netherlands)
+	pr: Premeira Liga (Portugal)
+	se: Serie A (Brazil)
+	wc: World Cup (International) [when running]
+	ec: European Championship (International) [when running]

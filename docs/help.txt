@@ -1,3 +1,18 @@
-usage: football [-h/--help] 
-	-h/--help
-		Prints the user documentation to the terminal.
+Usage: footy [OPTIONS]
+	-l/--league <name>
+		Specifies the football league. 
+		Use '--help leagues' to see all supported leagues.
+	-t/--team <name>
+		Specifies the football team.
+		Use '--help teams' to see all supported teams.
+	-f/--fixtures <number,number>
+		Specifies the number of past and future games to be displayed.
+		'--fixtures 3,4' prints the last 3 games and next 4 games.
+	-s/--standings
+		Prints the standings.
+	-a/--apikey <key>
+		Sets the apikey for www.football-data.org
+	-h/--help [leagues] [teams]
+		Prints this user documentation or all supported leagues/teams.
+
+Defaults can be configured at: /config/footy.yaml
