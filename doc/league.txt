@@ -5,7 +5,7 @@ Supported leagues:
 	bl: Bundesliga (Germany)
 	ll: La Liga (Spain)
 	sa: Serie A (Italy)
-	lo: Ligue 1 (France)
+	lu: Ligue 1 (France)
 	er: Eredivisie (Netherlands)
 	pr: Premeira Liga (Portugal)
 	se: Serie A (Brazil)
