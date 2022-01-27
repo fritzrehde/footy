@@ -1,4 +1,0 @@
-Supported teams:
-	Premier League:
-		ars: Arsenal
-		av:  Aston Villa
