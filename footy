@@ -22,7 +22,7 @@ shorthelp()
 {
 	cat <<-EOF
 	Usage: $USAGE
-	-s [<code>|<id>]  Prints standings in league (specified by its code or id).
+	-s [<code>|<id>]  Prints standings in league (specified by the league's code or id).
 	-k <api-key>      Saves the api-key to \$HOME/.config/footy/api_key.txt
 	-l                Prints all supported leagues.
 	-t                Prints all supported teams.
@@ -52,6 +52,7 @@ teams()
 	# TODO: only works for England, make work for all countries
 	curl -sH "X-Auth-Token: $API_KEY" https://api.football-data.org/v2/teams | \
 		jq -r '.teams[] | "\(.area.name),\(.name),\(.tla),\(.id)"' | \
+		# awk '{ $3 = ($3 == "null" ? "" : $3); $6 = ($5 == "TIER_ONE" ? "Free" : "" )} 1' FS="," OFS="," | \
 		column -ts "," -N Area,Name,Code,Id -R Id
 	exit 0
 }
