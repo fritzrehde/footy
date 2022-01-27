@@ -1,15 +1,14 @@
 #!/bin/bash
 
+# == SET VARIABLES ==
 API_KEY=$(cat $HOME/.config/footy/api_key.txt)
-
 # Set script name and full path
 FOOTY=$(basename "$0")
 FOOTY_FULL="$0"
 # export TODO_SH TODO_FULL_SH
-
-# == HELP MESSAGES ==
 USAGE="$FOOTY [-s <league>] [-k <api-key>] [-l] [-t] [-h]"
 
+# == FUNCTIONS FOR OPTIONS ==
 usage()
 {
 	cat <<-EOF >&2
@@ -23,25 +22,19 @@ shorthelp()
 {
 	cat <<-EOF
 	Usage: $USAGE
-	-s <league-code>  Prints the standings in specified league.
+	-s [<code>|<id>]  Prints standings in league (specified by its code or id).
 	-k <api-key>      Saves the api-key to \$HOME/.config/footy/api_key.txt
-	-l                Prints all league codes.
-	-t                Prints all team codes.
-	-H                Prints the codes of all supported leagues and teams.
+	-l                Prints all supported leagues.
+	-t                Prints all supported teams.
 	-h                Prints this user documentation.
 	EOF
 	exit 0
 }
 
-longhelp()
+set_key()
 {
-	cat <<-EOF
-	Usage: $USAGE
-	League codes:
-	PL (Premier League), BL1 (Bundesliga), SA (Serie A)
-
-	Team codes:
-	EOF
+	mkdir -p $HOME/.config/footy
+	echo "${OPTARG}" > $HOME/.config/footy/api_key.txt
 	exit 0
 }
 
@@ -49,16 +42,7 @@ leagues()
 {
 	curl -sH "X-Auth-Token: $API_KEY" https://api.football-data.org/v2/competitions | \
 		jq -r '.competitions[] | "\(.area.name),\(.name),\(.code),\(.id),\(.plan)"' | \
-		awk '{ $3 = ($3 == "null" ? "" : $3) } 1' FS="," OFS="," | \
-		awk '{ $6 = ($5 == "TIER_ONE" ? "Free" : "") } 1' FS="," OFS="," | \
-		# awk 'BEGIN{FS=",";OFS=",";} { $3 = ($3 == "null" ? "" : $3) } 1' FS="," OFS="," | \
-		# awk 'BEGIN{FS=",";OFS=",";} { $6 = ($5 == "TIER_ONE" ? "Free" : "") } 1' | \
-		# awk '{ $3 = ($3 -eq 2002 ? 0 : $3) } 1' FS="," OFS="," | \
-		# awk '{ $2 = ($2 == "null" ? "TEST" : $2) } 1' FS="," OFS="," | \
-		# awk '{ FS=","; OFS=","; if [ $4 = "TIER_ONE" ]; then { $5="Free" }; else { $5="Paid" }; print; }' | \
-		# while read line; do if grep -q "TIER_ONE" line; then echo "${line},Free"; else "${line},Paid" fi done | \
-		# xargs -I % if grep -q "TIER_ONE" %; then echo "${line},Free"; else "${line},Paid" fi | \
-		# xargs -I % bash -c 'if grep -q "TIER_ONE" % ; then echo "%,Free"; else "%,Paid" ; fi' | \
+		awk '{ $3 = ($3 == "null" ? "" : $3); $6 = ($5 == "TIER_ONE" ? "Free" : "" )} 1' FS="," OFS="," | \
 		column -ts "," -N Area,Name,Code,Id,Plan,Price -R Id -H Plan
 	exit 0
 }
@@ -69,13 +53,6 @@ teams()
 	curl -sH "X-Auth-Token: $API_KEY" https://api.football-data.org/v2/teams | \
 		jq -r '.teams[] | "\(.area.name),\(.name),\(.tla),\(.id)"' | \
 		column -ts "," -N Area,Name,Code,Id -R Id
-	exit 0
-}
-
-set_key()
-{
-	mkdir -p $HOME/.config/footy
-	echo "${OPTARG}" > $HOME/.config/footy/api_key.txt
 	exit 0
 }
 
@@ -94,14 +71,14 @@ while getopts ":s:k:lth" opt; do
 		h)
 			shorthelp
 			;;
+		k)
+			set_key
+			;;
 		l)
 			leagues
 			;;
 		t)
 			teams
-			;;
-		k)
-			set_key
 			;;
 		s)
 			standings

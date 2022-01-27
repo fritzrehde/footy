@@ -28,11 +28,12 @@ Read about all the possible commands in the [USAGE](.USAGE.md) file.
 
 ### Supported leagues and teams
 To get an overview of all supported leagues and teams, run `footy -l` and `footy -t`respectively.
-Since the outputs will be very large, I recommend piping the output into a [pager](https://man7.org/linux/man-pages/man1/less.1.html) (e.g. `footy -l | less`), where you can then easily search for a specific league or team.
-Anytime an option requires a league or team code (e.g. get standings in `footy -s <league-code>`), you can either use the `Code` or `Id` column from the tables provided by `footy -l` and `footy -r`.
+I recommend piping the output into a [pager](https://man7.org/linux/man-pages/man1/less.1.html) (e.g. `footy -l | less`), where you can easily search for a specific league or team.  
+
+The `Code` and `Id` columns can both be used in options (e.g. `footy -s BL1` and `footy -s 2002` both work).
 Some leagues and teams do not have a unique `Code`, so you will have to use the `Id` there.
 
-**Note**: Some of the (smaller) leagues require paid access ([pricing](https://www.football-data.org/coverage)). Therefore, the `Price` column shows which ones are free.
+**Note**: Some of the (smaller) leagues require paid access ([pricing](https://www.football-data.org/coverage)). Therefore, the `Price` column shows which leagues are free.
 
 ## Dependencies
 
