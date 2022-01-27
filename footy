@@ -3,18 +3,18 @@
 API_KEY=$(cat $HOME/.config/footy/api_key.txt)
 
 # Set script name and full path
-FOOTY_SH=$(basename "$0")
-FOOTY_FULL_SH="$0"
+FOOTY=$(basename "$0")
+FOOTY_FULL="$0"
 # export TODO_SH TODO_FULL_SH
 
 # == HELP MESSAGES ==
-USAGE="$0 [-s <league>] [-h]"
+USAGE="$FOOTY [-s <league>] [-k <api-key>] [-H] [-h]"
 
 usage()
 {
 	cat <<-EOF >&2
 	Usage: $USAGE
-	Try '$FOOTY_SH -h' for more information.
+	Try '$FOOTY -h' for more information.
 	EOF
 	exit 1
 }
@@ -24,8 +24,8 @@ shorthelp()
 	cat <<-EOF
 	Usage: $USAGE
 	-s <league>   Prints the standings in specified league.
-	-k <api-key>  Saves the api-key for www.football-data.org in $HOME/.config/footy/api_key.txt
-	-H            Prints names of all supported leagues or teams.
+	-k <api-key>  Saves the api-key to \$HOME/.config/footy/api_key.txt
+	-H            Prints names of all supported leagues and teams.
 	-h            Prints this user documentation.
 	EOF
 	exit 0
@@ -41,7 +41,7 @@ longhelp()
 }
 
 # == PROCESS OPTIONS ==
-while getopts ":s:hH" opt; do
+while getopts ":s:k:hH" opt; do
 	case "${opt}" in
 		h)
 			shorthelp
@@ -50,6 +50,8 @@ while getopts ":s:hH" opt; do
 			longhelp
 			;;
 		k)
+			mkdir -p $HOME/.config/footy
+			echo "${OPTARG}" > $HOME/.config/footy/api_key.txt
 			;;
 		s)
 			# standings
