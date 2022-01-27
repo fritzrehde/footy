@@ -15,13 +15,15 @@ git clone https://github.com/fritzrehde/footy.git
 cd footy
 make
 ```
-Set the api-key by running `footy -k <your-api-key>` or manually create the file `$HOME/.config/footy/api-key.txt` containing only the api-key.  
+Set the api-key by running `footy -k <api-key>` or manually create the file `$HOME/.config/footy/api-key.txt` containing only the api-key.  
 
 **Note**: footy currently only supports Linux (due to some Linux-specific [dependencies](#dependencies)).
 
 ## Usage
 
-`footy [-s <league>] [-k <api-key>] [-H] [-h]`  
+```shell
+footy [-s <league>] [-k <api-key>] [-H] [-h]
+```
 Read about all the possible commands in the [USAGE](.USAGE.md) file.
 
 ## Dependencies
@@ -30,3 +32,5 @@ Read about all the possible commands in the [USAGE](.USAGE.md) file.
 [util-linux](https://github.com/util-linux/util-linux): for [column](https://man7.org/linux/man-pages/man1/column.1.html)
 
 ## License
+
+The MIT License © Fritz Rehde
