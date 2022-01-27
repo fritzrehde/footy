@@ -27,11 +27,11 @@ footy [-s <league>] [-k <api-key>] [-l] [-t] [-h]
 Read about all the possible commands in the [USAGE](.USAGE.md) file.
 
 ### Supported leagues and teams
-To get an overview of all supported leagues and teams, run `footy -l` and `footy -t`respectively.
-I recommend piping the output into a [pager](https://man7.org/linux/man-pages/man1/less.1.html) (e.g. `footy -l | less`), where you can easily search for a specific league or team.  
+To get an overview of all supported leagues and teams, use the `-l` and `-t` options.
+I recommend piping the output into a [pager](https://man7.org/linux/man-pages/man1/less.1.html) (e.g. `footy -l | less`), so you can easily search for a specific league or team.  
 
-The `Code` and `Id` columns can both be used in options (e.g. `footy -s BL1` and `footy -s 2002` both work).
-Some leagues and teams do not have a unique `Code`, so you will have to use the `Id` there.
+Generally, the `Code` and `Id` columns can both be used in options (e.g. `footy -s BL1` and `footy -s 2002` both work).
+However, Some leagues and teams do not have a unique `Code`, so you will have to use the `Id` there.
 
 **Note**: Some of the (smaller) leagues require paid access ([pricing](https://www.football-data.org/coverage)). Therefore, the `Price` column shows which leagues are free.
 
