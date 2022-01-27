@@ -2,11 +2,10 @@
 
 # == SET VARIABLES ==
 API_KEY=$(cat $HOME/.config/footy/api_key.txt)
-# Set script name and full path
 FOOTY=$(basename "$0")
 FOOTY_FULL="$0"
 # export TODO_SH TODO_FULL_SH
-USAGE="$FOOTY [-s <league>] [-k <api-key>] [-l] [-t] [-h]"
+USAGE="$FOOTY [-s <league>] [-k <api-key>] [-l] [-t <league>] [-h]"
 
 # == FUNCTIONS FOR OPTIONS ==
 usage()
@@ -22,10 +21,10 @@ shorthelp()
 {
 	cat <<-EOF
 	Usage: $USAGE
-	-s [<code>|<id>]  Prints standings in league (specified by the league's code or id).
+	-s [<league>]     Prints standings in league (use league's code or id).
 	-k <api-key>      Saves the api-key to \$HOME/.config/footy/api_key.txt
 	-l                Prints all supported leagues.
-	-t                Prints all supported teams.
+	-t [<league>]     Prints all teams in a league (use league's code or id).
 	-h                Prints this user documentation.
 	EOF
 	exit 0
@@ -42,18 +41,20 @@ leagues()
 {
 	curl -sH "X-Auth-Token: $API_KEY" https://api.football-data.org/v2/competitions | \
 		jq -r '.competitions[] | "\(.area.name),\(.name),\(.code),\(.id),\(.plan)"' | \
-		awk '{ $3 = ($3 == "null" ? "" : $3); $6 = ($5 == "TIER_ONE" ? "Free" : "" )} 1' FS="," OFS="," | \
+		awk '{ $3 = ($3 == "null" ? "" : $3); $6 = ($5 == "TIER_ONE" ? "Free" : "" ) } 1' FS="," OFS="," | \
 		column -ts "," -N Area,Name,Code,Id,Plan,Price -R Id -H Plan
 	exit 0
 }
 
 teams()
 {
-	# TODO: only works for England, make work for all countries
-	curl -sH "X-Auth-Token: $API_KEY" https://api.football-data.org/v2/teams | \
-		jq -r '.teams[] | "\(.area.name),\(.name),\(.tla),\(.id)"' | \
-		# awk '{ $3 = ($3 == "null" ? "" : $3); $6 = ($5 == "TIER_ONE" ? "Free" : "" )} 1' FS="," OFS="," | \
-		column -ts "," -N Area,Name,Code,Id -R Id
+	# TODO: adjust date to current season properly
+	SEASON=$(date +"%G")
+	COMP=${OPTARG}
+	curl -sH "X-Auth-Token: $API_KEY" https://api.football-data.org/v2/competitions/$COMP/teams?season=2021 | \
+		jq -r '.teams[] | "\(.name),\(.tla),\(.id)"' | \
+		awk '{ $2 = ($2 == "null" ? "" : $2) } 1' FS="," OFS="," | \
+		column -ts "," -N Name,Code,Id -R Id
 	exit 0
 }
 
@@ -67,7 +68,7 @@ standings()
 }
 
 # == PROCESS OPTIONS ==
-while getopts ":s:k:lth" opt; do
+while getopts ":s:k:lt:h" opt; do
 	case "${opt}" in
 		h)
 			shorthelp
