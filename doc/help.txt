@@ -14,5 +14,3 @@ Usage: footy [OPTIONS]
 		Prints all supported leagues or teams.
 	-h/--help
 		Prints this user documentation.
-
-Defaults can be configured at: /config/footy.yaml
