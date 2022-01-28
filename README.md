@@ -13,7 +13,14 @@ You can register for one [here](https://www.football-data.org/client/register) f
 ```shell
 git clone https://github.com/fritzrehde/footy.git
 cd footy
-make
+make install
+```
+**Note:** Makefile defaults to some default paths for installed files. Adjust to your system:
+
+- `INSTALL_DIR`: PATH for executables (default /usr/local/bin)
+
+```shell
+make install INSTALL_DIR=/usr/bin
 ```
 Set the api-key by running `footy -k <api-key>` or manually create the file `$HOME/.config/footy/api-key.txt` containing only the api-key.  
 
@@ -27,7 +34,7 @@ footy [-s <league>] [-k <api-key>] [-l] [-t <league>] [-h]
 Read about all the possible commands in the [USAGE](.USAGE.md) file.
 
 ### Supported leagues and teams
-Use the `-l` option to get an overview of all supported leagues (I recommend piping the output into a [pager](https://man7.org/linux/man-pages/man1/less.1.html) (e.g. `footy -l | less`), then use `-t <league>` with either the league's `Code` or `Id` as the argument to see all teams in that league (e.g. `footy -t BL1` and `footy -t 2002` both work).
+Use the `-l` option to get an overview of all supported leagues (I recommend piping the output into a [pager](https://man7.org/linux/man-pages/man1/less.1.html) (e.g. `footy -l | less`), then use `-t <league>` with either a league's `Code` or `Id` as the argument to see all teams in that league (e.g. `footy -t BL1` and `footy -t 2002` both work).
 
 Some leagues and teams do not have a `Code`, so you will have to use the `Id` there.
 

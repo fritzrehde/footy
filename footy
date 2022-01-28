@@ -21,11 +21,11 @@ shorthelp()
 {
 	cat <<-EOF
 	Usage: $USAGE
-	-s [<league>]     Prints standings in league (use league's code or id).
-	-k <api-key>      Saves the api-key to \$HOME/.config/footy/api_key.txt
-	-l                Prints all supported leagues.
-	-t [<league>]     Prints all teams in a league (use league's code or id).
-	-h                Prints this user documentation.
+	-s <league>   Prints standings in a league (use league's code or id).
+	-k <api-key>  Saves the api-key to \$HOME/.config/footy/api_key.txt
+	-l            Prints all supported leagues.
+	-t <league>   Prints all teams in a league (use league's code or id).
+	-h            Prints this user documentation.
 	EOF
 	exit 0
 }
@@ -90,3 +90,5 @@ while getopts ":s:k:lt:h" opt; do
 			;;
 	esac
 done
+
+usage; exit 0
