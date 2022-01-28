@@ -49,7 +49,7 @@ leagues()
 teams()
 {
 	# TODO: adjust date to current season properly
-	SEASON=$(date +"%G")
+	SEASON=$(date +"%Y")
 	COMP=${OPTARG}
 	curl -sH "X-Auth-Token: $API_KEY" https://api.football-data.org/v2/competitions/$COMP/teams?season=2021 | \
 		jq -r '.teams[] | "\(.name),\(.tla),\(.id)"' | \
@@ -67,8 +67,23 @@ standings()
 	exit 0
 }
 
+matches()
+{
+	# TODO: add support for teams as well
+	# TODO: +<days> searches for upcoming, -<days> searches for past
+	DAYS=${OPTARG}
+	DATE_FROM=$(date -d "$date -$DAYS days" +"%Y-%m-%d")
+	DATE_TO=$(date +"%Y-%m-%d")
+	COMPETITION=BL1
+	curl -sH "X-Auth-Token: $API_KEY" https://api.football-data.org/v2/competitions/$COMPETITION/matches\?dateFrom=$DATE_FROM\&dateTo=$DATE_TO | \
+		jq -r '.matches[] | "\(.homeTeam.name),\(.awayTeam.name),\(.score.fullTime.homeTeam):\(.score.fullTime.awayTeam)"' | \
+		awk '{ $3 = ($3 == "null:null" ? "-:-" : $3) } 1' FS="," OFS="," | \
+		column -ts "," -N Home,Away,Score
+	exit 0
+}
+
 # == PROCESS OPTIONS ==
-while getopts ":s:k:lt:h" opt; do
+while getopts ":hk:lt:s:m:" opt; do
 	case "${opt}" in
 		h)
 			shorthelp
@@ -84,6 +99,9 @@ while getopts ":s:k:lt:h" opt; do
 			;;
 		s)
 			standings
+			;;
+		m)
+			matches
 			;;
 		*)
 			usage

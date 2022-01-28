@@ -15,6 +15,8 @@ git clone https://github.com/fritzrehde/footy.git
 cd footy
 make install
 ```
+Set the api-key by running `footy -k <api-key>` or manually create the file `$HOME/.config/footy/api-key.txt` containing only the api-key.  
+
 **Note:** Makefile defaults to some default paths for installed files. Adjust to your system:
 
 - `INSTALL_DIR`: PATH for executables (default /usr/local/bin)
@@ -22,8 +24,6 @@ make install
 ```shell
 make install INSTALL_DIR=/usr/bin
 ```
-Set the api-key by running `footy -k <api-key>` or manually create the file `$HOME/.config/footy/api-key.txt` containing only the api-key.  
-
 **Note**: footy currently only supports Linux (due to some Linux-specific [dependencies](#dependencies)).
 
 ## Usage
