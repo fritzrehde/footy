@@ -21,11 +21,12 @@ shorthelp()
 {
 	cat <<-EOF
 	Usage: $USAGE
-	-s <league>   Prints standings in a league (use league's code or id).
-	-k <api-key>  Saves the api-key to \$HOME/.config/footy/api_key.txt
-	-l            Prints all supported leagues.
-	-t <league>   Prints all teams in a league (use league's code or id).
-	-h            Prints this user documentation.
+	-s <league>         Prints standings in a league (use league's code or id).
+	-m <+days>|<-days>  Prints all upcoming (+ prefix) or previous (- prefix) matches.
+	-k <api-key>        Saves the api-key to \$HOME/.config/footy/api_key.txt
+	-l                  Prints all supported leagues.
+	-t <league>         Prints all teams in a league (use league's code or id).
+	-h                  Prints this user documentation.
 	EOF
 	exit 0
 }
@@ -48,10 +49,8 @@ leagues()
 
 teams()
 {
-	# TODO: adjust date to current season properly
-	SEASON=$(date +"%Y")
 	COMP=${OPTARG}
-	curl -sH "X-Auth-Token: $API_KEY" https://api.football-data.org/v2/competitions/$COMP/teams?season=2021 | \
+	curl -sH "X-Auth-Token: $API_KEY" https://api.football-data.org/v2/competitions/$COMP/teams | \
 		jq -r '.teams[] | "\(.name),\(.tla),\(.id)"' | \
 		awk '{ $2 = ($2 == "null" ? "" : $2) } 1' FS="," OFS="," | \
 		column -ts "," -N Name,Code,Id -R Id
@@ -60,8 +59,8 @@ teams()
 
 standings()
 {
-	COMPETITION=${OPTARG}
-	curl -sH "X-Auth-Token: $API_KEY" https://api.football-data.org/v2/competitions/$COMPETITION/standings | \
+	COMP=${OPTARG}
+	curl -sH "X-Auth-Token: $API_KEY" https://api.football-data.org/v2/competitions/$COMP/standings | \
 		jq -r '.standings[0].table[] | "\(.position),\(.team.name),\(.playedGames),\(.won),\(.draw),\(.lost),\(.points)"' | \
 		column -ts "," -N Pos,Team,P,W,D,L,Pts -R Pos,P,W,D,L,Pts
 	exit 0
@@ -70,15 +69,26 @@ standings()
 matches()
 {
 	# TODO: add support for teams as well
-	# TODO: +<days> searches for upcoming, -<days> searches for past
-	DAYS=${OPTARG}
-	DATE_FROM=$(date -d "$date -$DAYS days" +"%Y-%m-%d")
-	DATE_TO=$(date +"%Y-%m-%d")
+	# TODO: format date
 	COMPETITION=BL1
+	SIGN=$(echo "${OPTARG}" | cut -c -1)
+	DAYS=$(echo "${OPTARG}" | cut -c 2-)
+	TODAY=$(date +"%Y-%m-%d")
+	if [ $SIGN = "-" ]; then
+		DATE_FROM=$(date -d "$date -$DAYS days" +"%Y-%m-%d")
+		DATE_TO=$TODAY
+	elif [ $SIGN = "+" ]; then
+		DATE_FROM=$TODAY
+		DATE_TO=$(date -d "$date +$DAYS days" +"%Y-%m-%d")
+	else
+		usage
+	fi
+
 	curl -sH "X-Auth-Token: $API_KEY" https://api.football-data.org/v2/competitions/$COMPETITION/matches\?dateFrom=$DATE_FROM\&dateTo=$DATE_TO | \
-		jq -r '.matches[] | "\(.homeTeam.name),\(.awayTeam.name),\(.score.fullTime.homeTeam):\(.score.fullTime.awayTeam)"' | \
-		awk '{ $3 = ($3 == "null:null" ? "-:-" : $3) } 1' FS="," OFS="," | \
-		column -ts "," -N Home,Away,Score
+		jq -r '.matches[] | "\(.utcDate),\(.homeTeam.name),\(.awayTeam.name),\(.score.fullTime.homeTeam):\(.score.fullTime.awayTeam)"' | \
+		awk '{ $4 = ($4 == "null:null" ? "-:-" : $4) } 1' FS="," OFS="," | \
+		# awk '{ $1 = $(date -d $1 +"%d %b %H:%M"); $4 = ($4 == "null:null" ? "-:-" : $4) } 1' FS="," OFS="," | \
+		column -ts "," -N Date,Home,Away,Score
 	exit 0
 }
 
