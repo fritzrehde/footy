@@ -13,7 +13,7 @@ You can register for one [here](https://www.football-data.org/client/register) f
 ```shell
 git clone https://github.com/fritzrehde/footy.git
 cd footy
-make install
+sudo make install
 ```
 Set the api-key by running `footy -k <api-key>` or manually create the file `$HOME/.config/footy/api-key.txt` containing only the api-key.  
 
