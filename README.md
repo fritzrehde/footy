@@ -2,6 +2,11 @@
 
 <i>A simple shell script that displays the latest football scores, fixtures and standings.</i>
 
+## Features
+
+- **Minimalistic output**: footy's output can easily be piped to other commands (like `awk`) for uses in shell scripts
+- **Portable**: minimal [dependencies](#dependencies)
+
 ## Install
 
 Since footy uses the data provided by [football-data.org](https://www.football-data.org/), an api-key is required.
