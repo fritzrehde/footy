@@ -34,16 +34,16 @@ footy [-s <league>] [-k <api-key>] [-l] [-t <league>] [-h]
 Read about all the possible commands in the [USAGE](.USAGE.md) file.
 
 ### Supported leagues and teams
-Use the `-l` option to get an overview of all supported leagues (I recommend piping the output into a [pager](https://man7.org/linux/man-pages/man1/less.1.html) (e.g. `footy -l | less`), then use `-t <league>` with either a league's **Code** or **Id** as the argument to see all teams in that league (e.g. `footy -t BL1` and `footy -t 2002` both work).
+Use the `-l` option to get an overview of all supported leagues (I recommend piping the output into a [pager](https://man7.org/linux/man-pages/man1/less.1.html) (e.g. `footy -l | less`)), then use `-t <league>` with either a league's *Code* or *Id* as the argument to see all teams in that league (e.g. `footy -t BL1` and `footy -t 2002` both work).
 
-Some leagues and teams do not have a **Code**, so you will have to use the **Id** there.
+Some leagues and teams do not have a *Code*, so you will have to use the *Id* there.
 
-**Note**: Access to some of the (smaller) leagues/teams is paid ([pricing](https://www.football-data.org/coverage)). Therefore, the `Price` column shows which leagues are free.
+**Note**: Access to some of the (smaller) leagues/teams is paid ([pricing](https://www.football-data.org/coverage)). Therefore, the *Price* column shows which leagues are free.
 
 ## Dependencies
 
-[`jq`](https://stedolan.github.io/jq/): JSON processor  
-[`util-linux`](https://github.com/util-linux/util-linux): for [`column`](https://man7.org/linux/man-pages/man1/column.1.html)
+- [`jq`](https://stedolan.github.io/jq/): JSON processor  
+- [`util-linux`](https://github.com/util-linux/util-linux): for [`column`](https://man7.org/linux/man-pages/man1/column.1.html)
 
 ## License
 
