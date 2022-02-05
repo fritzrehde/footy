@@ -42,8 +42,8 @@ Some leagues and teams do not have a `Code`, so you will have to use the `Id` th
 
 ## Dependencies
 
-[jq](https://stedolan.github.io/jq/): JSON processor  
-[util-linux](https://github.com/util-linux/util-linux): for [column](https://man7.org/linux/man-pages/man1/column.1.html)
+[`jq`](https://stedolan.github.io/jq/): JSON processor  
+[`util-linux`](https://github.com/util-linux/util-linux): for [`column`](https://man7.org/linux/man-pages/man1/column.1.html)
 
 ## License
 
