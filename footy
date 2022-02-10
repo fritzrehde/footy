@@ -22,7 +22,7 @@ shorthelp()
 	cat <<-EOF
 	Usage: $USAGE
 	-s <league>         Prints standings in a league (use league's code or id).
-	-m <+days>|<-days>  Prints all upcoming (+ prefix) or previous (- prefix) matches.
+	-m <+days>|<-days>  Prints upcoming ('+' prefix) or previous ('-' prefix) matches.
 	-k <api-key>        Saves the api-key to \$HOME/.config/footy/api_key.txt
 	-l                  Prints all supported leagues.
 	-t <league>         Prints all teams in a league (use league's code or id).
