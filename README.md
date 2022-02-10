@@ -11,6 +11,17 @@ I will have more time to work on footy after my university exams.
 - **Minimalistic output**: footy's output can easily be piped to other commands (like `awk`) for uses in shell scripts
 - **Portable**: minimal [dependencies](#dependencies)
 
+## Command line arguments
+
+```shell
+Usage: footy [-s <league> | -l | -t <league> | -k <api-key> | -h]
+-s <league>         Prints standings in a league (use league's code or id).
+-l                  Prints all supported leagues.
+-t <league>         Prints all teams in a league (use league's code or id).
+-k <api-key>        Saves the api-key to $HOME/.config/footy/api_key.txt
+-h                  Prints this user documentation.
+```
+
 ## Install
 
 Since footy uses the data provided by [football-data.org](https://www.football-data.org/), an api-key is required.

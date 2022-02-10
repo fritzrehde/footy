@@ -5,7 +5,7 @@ API_KEY=$(cat $HOME/.config/footy/api_key.txt)
 FOOTY=$(basename "$0")
 FOOTY_FULL="$0"
 # export TODO_SH TODO_FULL_SH
-USAGE="$FOOTY [-s <league>] [-k <api-key>] [-l] [-t <league>] [-h]"
+USAGE="$FOOTY [-s <league> | -l | -t <league> | -k <api-key> | -h]"
 
 # == FUNCTIONS FOR OPTIONS ==
 usage()
@@ -23,9 +23,9 @@ shorthelp()
 	Usage: $USAGE
 	-s <league>         Prints standings in a league (use league's code or id).
 	-m <+days>|<-days>  Prints upcoming ('+' prefix) or previous ('-' prefix) matches.
-	-k <api-key>        Saves the api-key to \$HOME/.config/footy/api_key.txt
 	-l                  Prints all supported leagues.
 	-t <league>         Prints all teams in a league (use league's code or id).
+	-k <api-key>        Saves the api-key to \$HOME/.config/footy/api_key.txt
 	-h                  Prints this user documentation.
 	EOF
 	exit 0
