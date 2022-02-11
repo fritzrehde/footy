@@ -1,10 +1,11 @@
 #!/bin/bash
 
 # == SET VARIABLES ==
-API_KEY=$(cat $HOME/.config/footy/api_key.txt)
+API=https://api.football-data.org/v2
+API_KEY="X-Auth-Token: $(cat $HOME/.config/footy/api_key.txt)"
+# API_KEY=$(cat $HOME/.config/footy/api_key.txt)
 FOOTY=$(basename "$0")
 FOOTY_FULL="$0"
-# export TODO_SH TODO_FULL_SH
 USAGE="$FOOTY [-s <league> | -l | -t <league> | -k <api-key> | -h]"
 
 # == FUNCTIONS FOR OPTIONS ==
@@ -40,7 +41,7 @@ set_key()
 
 leagues()
 {
-	curl -sH "X-Auth-Token: $API_KEY" https://api.football-data.org/v2/competitions | \
+	curl -sH "$API_KEY" $API/competitions | \
 		jq -r '.competitions[] | "\(.area.name),\(.name),\(.code),\(.id),\(.plan)"' | \
 		awk '{ $3 = ($3 == "null" ? "" : $3); $6 = ($5 == "TIER_ONE" ? "Free" : "" ) } 1' FS="," OFS="," | \
 		column -ts "," -N Area,Name,Code,Id,Plan,Price -R Id -H Plan
@@ -50,7 +51,7 @@ leagues()
 teams()
 {
 	COMP=${OPTARG}
-	curl -sH "X-Auth-Token: $API_KEY" https://api.football-data.org/v2/competitions/$COMP/teams | \
+	curl -sH "$API_KEY" $API/competitions/$COMP/teams | \
 		jq -r '.teams[] | "\(.name),\(.tla),\(.id)"' | \
 		awk '{ $2 = ($2 == "null" ? "" : $2) } 1' FS="," OFS="," | \
 		column -ts "," -N Name,Code,Id -R Id
@@ -60,7 +61,7 @@ teams()
 standings()
 {
 	COMP=${OPTARG}
-	curl -sH "X-Auth-Token: $API_KEY" https://api.football-data.org/v2/competitions/$COMP/standings | \
+	curl -sH "$API_KEY" $API/competitions/$COMP/standings | \
 		jq -r '.standings[0].table[] | "\(.position),\(.team.name),\(.playedGames),\(.won),\(.draw),\(.lost),\(.points)"' | \
 		column -ts "," -N Pos,Team,P,W,D,L,Pts -R Pos,P,W,D,L,Pts
 	exit 0
@@ -84,7 +85,7 @@ matches()
 		usage
 	fi
 
-	curl -sH "X-Auth-Token: $API_KEY" https://api.football-data.org/v2/competitions/$COMPETITION/matches\?dateFrom=$DATE_FROM\&dateTo=$DATE_TO | \
+	curl -sH "$API_KEY" $API/competitions/$COMPETITION/matches\?dateFrom=$DATE_FROM\&dateTo=$DATE_TO | \
 		jq -r '.matches[] | "\(.utcDate),\(.homeTeam.name),\(.awayTeam.name),\(.score.fullTime.homeTeam):\(.score.fullTime.awayTeam)"' | \
 		awk '{ $4 = ($4 == "null:null" ? "-:-" : $4) } 1' FS="," OFS="," | \
 		# awk '{ $1 = $(date -d $1 +"%d %b %H:%M"); $4 = ($4 == "null:null" ? "-:-" : $4) } 1' FS="," OFS="," | \
@@ -119,4 +120,4 @@ while getopts ":hk:lt:s:m:" opt; do
 	esac
 done
 
-usage; exit 0
+usage

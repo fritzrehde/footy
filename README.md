@@ -44,7 +44,7 @@ Usage: footy [-s <league> | -l | -t <league> | -k <api-key> | -h]
 -k <api-key>        Saves the api-key to $HOME/.config/footy/api_key.txt
 -h                  Prints this user documentation.
 ```
-Read about all the possible commands in the [USAGE](.USAGE.md) file.
+<!-- Read about all the possible commands in the [USAGE](.USAGE.md) file. -->
 
 ### Supported leagues and teams
 Use the `-l` option to get an overview of all supported leagues (I recommend piping the output into a [pager](https://man7.org/linux/man-pages/man1/less.1.html) (e.g. `footy -l | less`)), then use `-t <league>` with either a league's *Code* or *Id* as the argument to see all teams in that league (e.g. `footy -t BL1` and `footy -t 2002` both work).
