@@ -3,7 +3,6 @@
 # == SET VARIABLES ==
 API=https://api.football-data.org/v2
 API_KEY="X-Auth-Token: $(cat $HOME/.config/footy/api_key.txt)"
-# API_KEY=$(cat $HOME/.config/footy/api_key.txt)
 FOOTY=$(basename "$0")
 FOOTY_FULL="$0"
 USAGE="$FOOTY [-s <league> | -l | -t <league> | -k <api-key> | -h]"
