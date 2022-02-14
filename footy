@@ -25,7 +25,7 @@ shorthelp()
 	-m <+days>|<-days>  Prints upcoming ('+' prefix) or previous ('-' prefix) matches.
 	-l                  Prints all supported leagues.
 	-t <league>         Prints all teams in a league (use league's code or id).
-	-k <api-key>        Saves the api-key to \$HOME/.config/footy/api_key.txt
+	-k <api-key>        Saves the api-key to $HOME/.config/footy/api_key.txt
 	-h                  Prints this user documentation.
 	EOF
 	exit 0
