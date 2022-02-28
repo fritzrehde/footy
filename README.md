@@ -41,7 +41,7 @@ Usage: footy [-s <league> | -l | -t <league> | -k <api-key> | -h]
 -s <league>         Prints standings in a league (use league's code or id).
 -l                  Prints all supported leagues.
 -t <league>         Prints all teams in a league (use league's code or id).
--k <api-key>        Saves the api-key to $HOME/.config/footy/api_key.txt
+-k <api-key>        Saves the api-key to $HOME/.config/footy/api-key.txt
 -h                  Prints this user documentation.
 ```
 <!-- Read about all the possible commands in the [USAGE](.USAGE.md) file. -->
