@@ -2,7 +2,7 @@
 
 <i>A simple shell script that displays the latest football scores, fixtures and standings.</i>
 
-<img src="https://raw.githubusercontent.com/fritzrehde/i/master/footy/footy-preview.jpg" width=400>
+<img src="https://raw.githubusercontent.com/fritzrehde/i/master/footy/footy-preview.jpg" width=500>
 
 ## Table of Contents
 
