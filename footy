@@ -45,36 +45,54 @@ api_call()
 	if [ "$ERROR" = "false" ]; then
 		echo "$JSON"
 	else
-		1>&2 echo "$ERROR"
+		echo "$ERROR"
 		exit 1
 	fi
 }
 
 leagues()
 {
-	echo "$(api_call competitions)" | \
-		jq -r '.competitions[] | "\(.area.name),\(.name),\(.code),\(.id),\(.plan)"' | \
-		awk '{ $3 = ($3 == "null" ? "" : $3); $6 = ($5 == "TIER_ONE" ? "Free" : "" ) } 1' FS="," OFS="," | \
-		column -ts "," -N Area,Name,Code,Id,Plan,Price -H Plan
+	JSON=$(api_call competitions)
+	if [ $? -eq 0 ]; then
+		echo "$JSON" | \
+			jq -r '.competitions[] | "\(.area.name),\(.name),\(.code),\(.id),\(.plan)"' | \
+			awk '{ $3 = ($3 == "null" ? "" : $3); $6 = ($5 == "TIER_ONE" ? "Free" : "" ) } 1' FS="," OFS="," | \
+			cat <(echo "Area,Name,Code,Id,Plan,Price") - | \
+			column -ts ','
+	else
+		1>&2 echo "$JSON"
+	fi
 	exit 0
 }
 
 teams()
 {
 	COMPETITION=${OPTARG}
-	echo "$(api_call competitions/$COMPETITION/teams)" | \
-		jq -r '.teams[] | "\(.name),\(.tla),\(.id)"' | \
-		awk '{ $2 = ($2 == "null" ? "" : $2) } 1' FS="," OFS="," | \
-		column -ts "," -N Name,Code,Id
+	JSON=$(api_call competitions/$COMPETITION/teams)
+	if [ $? -eq 0 ]; then
+		echo "$JSON" | \
+			jq -r '.teams[] | "\(.name),\(.tla),\(.id)"' | \
+			awk '{ $2 = ($2 == "null" ? "" : $2) } 1' FS="," OFS="," | \
+			cat <(echo "Name,Code,Id") - | \
+			column -ts ","
+	else
+		1>&2 echo "$JSON"
+	fi
 	exit 0
 }
 
 standings()
 {
 	COMPETITION=${OPTARG}
-	echo "$(api_call competitions/$COMPETITION/standings)" | \
-		jq -r '.standings[0].table[] | "\(.position),\(.team.name),\(.playedGames),\(.won),\(.draw),\(.lost),\(.points)"' | \
-		column -ts "," -N Pos,Team,P,W,D,L,Pts
+	JSON=$(api_call competitions/$COMPETITION/standings)
+	if [ $? -eq 0 ]; then
+		echo "$JSON" | \
+			jq -r '.standings[0].table[] | "\(.position),\(.team.name),\(.playedGames),\(.won),\(.draw),\(.lost),\(.points)"' | \
+			cat <(echo "Pos,Team,P,W,D,L,Pts") - | \
+			column -ts ","
+	else
+		1>&2 echo "$JSON"
+	fi
 	exit 0
 }
 
@@ -94,6 +112,7 @@ matches()
 		DATE_TO=$(date -d "$date +$DAYS days" +"%Y-%m-%d")
 	else
 		usage
+		exit 1
 	fi
 
 	curl -sH "$API_KEY" $API/competitions/$COMPETITION/matches\?dateFrom=$DATE_FROM\&dateTo=$DATE_TO | \

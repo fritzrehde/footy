@@ -2,10 +2,6 @@
 
 <i>A simple shell script that displays the latest football scores, fixtures and standings.</i>
 
-**Important**:
-footy is still in development (contains some bugs and not all desired features have been implemented yet).
-I will have more time to work on footy after my university exams.
-
 ## Features
 
 - **Minimalistic output**: footy's output can easily be piped to other commands (like `awk`) for uses in shell scripts
@@ -33,7 +29,6 @@ Set the api-key by running `footy -k <api-key>` or manually create the file `$HO
 ```shell
 make install INSTALL_DIR=/usr/bin
 ```
-**Note**: footy currently only supports Linux (due to some Linux-specific [dependencies](#dependencies)).
 
 ## Usage
 ```text
@@ -56,7 +51,6 @@ Some leagues and teams do not have a *Code*, so you will have to use the *Id* th
 ## Dependencies
 
 - [`jq`](https://stedolan.github.io/jq/): JSON processor  
-- [`util-linux`](https://github.com/util-linux/util-linux): for [`column`](https://man7.org/linux/man-pages/man1/column.1.html)
 
 ## License
 
