@@ -2,6 +2,8 @@
 
 <i>A simple shell script that displays the latest football scores, fixtures and standings.</i>
 
+<img src="https://raw.githubusercontent.com/fritzrehde/i/master/footy/footy-preview.jpg" width=640>
+
 ## Table of Contents
 
 - [Features](#features)
@@ -16,7 +18,7 @@
 
 ## Features
 
-- **Minimalistic output**: aiming to adhere to the Unix philosophy, footy's minimal and clean output can easily be piped to other commands
+- **Minimalistic output**: aiming to adhere to the [Unix philosophy](https://en.wikipedia.org/wiki/Unix_philosophy), footy's output can easily be piped to other tools
 - **Portable**: minimal [dependencies](#dependencies)
 
 ## Install
@@ -63,7 +65,7 @@ Use the `-l` option to get an overview of all supported leagues (I recommend pip
 
 Some leagues and teams do not have a *Code*, so you will have to use the *Id* there.
 
-**Note**: Access to some of the (smaller) leagues/teams is paid ([pricing](https://www.football-data.org/coverage)). Therefore, the *Price* column shows which leagues are free.
+**Note**: Access to some of the smaller leagues/teams is paid ([pricing](https://www.football-data.org/coverage)). Therefore, the *Price* column shows which leagues are free.
 
 ## Dependencies
 
