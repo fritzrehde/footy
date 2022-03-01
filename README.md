@@ -12,23 +12,29 @@
 Since footy uses the data provided by [football-data.org](https://www.football-data.org/), an api-key is required.
 You can register for one [here](https://www.football-data.org/client/register) for free.
 
-### Linux
+Once installed, set the api-key by running `footy -k <api-key>` or manually create the file `$HOME/.config/footy/api-key.txt` containing only the api-key.  
 
-#### Build from source
+### Build from source
 ```shell
 git clone https://github.com/fritzrehde/footy.git
 cd footy
 sudo make install
 ```
-Set the api-key by running `footy -k <api-key>` or manually create the file `$HOME/.config/footy/api-key.txt` containing only the api-key.  
 
-**Note:** Makefile defaults to some default paths for installed files. Adjust to your system:
+**Note:** The makefile defaults to some default paths for installed files. Adjust to your system:
 
 - `INSTALL_DIR`: PATH for executables (default /usr/local/bin)
 
 ```shell
 make install INSTALL_DIR=/usr/bin
 ```
+
+### Linux
+AUR: *to be added*
+
+### MacOS
+Homebrew: *to be added*
+
 
 ## Usage
 ```text
@@ -39,10 +45,9 @@ Usage: footy [-s <league> | -l | -t <league> | -k <api-key> | -h]
 -k <api-key>        Saves the api-key to $HOME/.config/footy/api-key.txt
 -h                  Prints this user documentation.
 ```
-<!-- Read about all the possible commands in the [USAGE](.USAGE.md) file. -->
 
 ### Supported leagues and teams
-Use the `-l` option to get an overview of all supported leagues (I recommend piping the output into a [pager](https://man7.org/linux/man-pages/man1/less.1.html) (e.g. `footy -l | less`)), then use `-t <league>` with either a league's *Code* or *Id* as the argument to see all teams in that league (e.g. `footy -t BL1` and `footy -t 2002` both work).
+Use the `-l` option to get an overview of all supported leagues (I recommend piping the output into a [pager](https://man7.org/linux/man-pages/man1/less.1.html)), then use `-t <league>` with either a league's *Code* or *Id* as the argument to see all teams in that league (e.g. `footy -t BL1` and `footy -t 2002` both work).
 
 Some leagues and teams do not have a *Code*, so you will have to use the *Id* there.
 

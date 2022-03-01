@@ -56,8 +56,9 @@ leagues()
 	if [ $? -eq 0 ]; then
 		echo "$JSON" | \
 			jq -r '.competitions[] | "\(.area.name),\(.name),\(.code),\(.id),\(.plan)"' | \
-			awk '{ $3 = ($3 == "null" ? "" : $3); $6 = ($5 == "TIER_ONE" ? "Free" : "" ) } 1' FS="," OFS="," | \
+			awk '{ $3 = ($3 == "null" ? "" : $3); $6 = ($5 == "TIER_ONE" ? "Free" : "") } 1' FS="," OFS="," | \
 			cat <(echo "Area,Name,Code,Id,Plan,Price") - | \
+			cut -d ',' -f 1-4,6 | \
 			column -ts ','
 	else
 		1>&2 echo "$JSON"
