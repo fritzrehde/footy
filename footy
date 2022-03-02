@@ -47,14 +47,15 @@ api_call()
 {
 	JSON=$(curl -sH "$API_KEY" $API/$1)
 	ERROR=$(echo "$JSON" | jq -r 'if .message != null then .message else "false" end')
-	[ "$ERROR" != "false" ] &&
-		(1>&2 echo "$ERROR"; exit 1)
+	if [ "$ERROR" != "false" ]; then
+		1>&2 echo "$ERROR"; exit 1
+	fi
 }
 
 leagues()
 {
 	api_call competitions
-	[ $? -ne 0 ] && exit 1
+	[ $? -eq 1 ] && exit 1
 	OUT=$(echo "$JSON" | \
 		jq -r '.competitions[] | "\(.area.name),\(.name),\(.code),\(.id),\(.plan)"' | \
 		awk '{ $3 = ($3 == "null" ? "" : $3); $6 = ($5 == "TIER_ONE" ? "Free" : "") } 1' FS="," OFS="," | \
@@ -65,7 +66,7 @@ leagues()
 teams()
 {
 	api_call competitions/$1/teams
-	[ $? -ne 0 ] && exit 1
+	[ $? -eq 1 ] && exit 1
 	OUT=$(echo "$JSON" | \
 		jq -r '.teams[] | "\(.name),\(.tla),\(.id)"' | \
 		awk '{ $2 = ($2 == "null" ? "" : $2) } 1' FS="," OFS="," | \
@@ -75,7 +76,7 @@ teams()
 standings()
 {
 	api_call competitions/$1/standings
-	[ $? -ne 0 ] && exit 1
+	[ $? -eq 1 ] && exit 1
 	OUT=$(echo "$JSON" | \
 		jq -r '.standings[0].table[] | "\(.position),\(.team.name),\(.playedGames),\(.won),\(.draw),\(.lost),\(.points)"' | \
 		cat <(echo "Pos,Team,P,W,D,L,Pts") -)
@@ -84,7 +85,7 @@ standings()
 matches_league()
 {
 	api_call competitions/$1/matches\?dateFrom=$2\&dateTo=$3
-	[ $? -ne 0 ] && exit 1
+	[ $? -eq 1 ] && exit 1
 	OUT=$(echo "$JSON" | \
 		jq -r '.matches[] | "\(.utcDate),\(.homeTeam.name),\(.awayTeam.name),\(.score.fullTime.homeTeam):\(.score.fullTime.awayTeam)"' | \
 		awk '{ $4 = ($4 == "null:null" ? "-:-" : $4) } 1' FS="," OFS="," | \
@@ -96,7 +97,7 @@ matches_league()
 matches_team()
 {
 	api_call teams/$1/matches\?dateFrom=$2\&dateTo=$3
-	[ $? -ne 0 ] && exit 1
+	[ $? -eq 1 ] && exit 1
 	OUT=$(echo "$JSON" | \
 		jq -r '.matches[] | "\(.utcDate),\(.homeTeam.name),\(.awayTeam.name),\(.score.fullTime.homeTeam):\(.score.fullTime.awayTeam)"' | \
 		awk '{ $4 = ($4 == "null:null" ? "-:-" : $4) } 1' FS="," OFS="," | \
@@ -144,6 +145,7 @@ while getopts ":hk:s:m:l:t:rIi:" opt; do
 	esac
 done
 
+# == CALL FUNCTIONS ==
 if $INFO_LEAGUES; then
 	leagues
 elif [ -n "$INFO_TEAMS" ]; then
