@@ -52,16 +52,25 @@ Homebrew: *to be added*
 
 ## Usage
 ```text
-Usage: footy [-s <league> | -l | -t <league> | -k <api-key> | -h]
--s <league>         Prints standings in a league (use league's code or id).
--l                  Prints all supported leagues.
--t <league>         Prints all teams in a league (use league's code or id).
--k <api-key>        Saves the api-key to $HOME/.config/footy/api-key.txt
--h                  Prints this user documentation.
+OPTIONS:
+  -s <league>   Prints standings in league (use league's code or id)
+  -m <+/-days>  Prints upcoming ('+' prefix) or previous ('-' prefix) matches 
+                Must be used with either -l <league> or -t <team>
+  -l <league>   Specifies league (use league's code or id)
+  -t <team>     Specifies team (must use team's id)
+  -I            Prints all supported leagues
+  -i <league>   Prints all teams in a league (use league's code or id)
+  -r            Unformatted output for piping to other tools
+  -k <api-key>  Saves the api-key to $HOME/.config/footy/api-key.txt
+  -h            Prints this help message
 ```
 
+### Examples
+
 ### Supported leagues and teams
-Use the `-l` option to get an overview of all supported leagues (I recommend piping the output into a [pager](https://man7.org/linux/man-pages/man1/less.1.html)), then use `-t <league>` with either a league's *Code* or *Id* as the argument to see all teams in that league (e.g. `footy -t BL1` and `footy -t 2002` both work).
+`footy -I` gives you an overview of all the supported leagues (I recommend piping the output into a [pager](https://man7.org/linux/man-pages/man1/less.1.html)).
+
+`footy -i BL1` or `footy -i 2002` prints all teams in the Bundesliga using either the *Code* `BL1` or the *Id* `2002`.
 
 Some leagues and teams do not have a *Code*, so you will have to use the *Id* there.
 
@@ -69,7 +78,7 @@ Some leagues and teams do not have a *Code*, so you will have to use the *Id* th
 
 ## Dependencies
 
-- [`jq`](https://stedolan.github.io/jq/): JSON processor  
+- [`jq`](https://stedolan.github.io/jq/): JSON processor
 
 ## License
 

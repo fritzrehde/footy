@@ -4,38 +4,40 @@
 API=https://api.football-data.org/v2
 API_KEY="X-Auth-Token: $(cat $HOME/.config/footy/api-key.txt)"
 FOOTY=$(basename "$0")
-FOOTY_FULL="$0"
-USAGE="$FOOTY [-s <league> | -l | -t <league> | -k <api-key> | -h]"
+USAGE="$FOOTY [-s <league> | -m <+/-days> | -l <league> | -t <team> | -I | -i <league> | -r | -k <api-key> | -h]"
 
 # == FUNCTIONS FOR OPTIONS ==
 usage()
 {
 	cat <<-EOF >&2
+	Error: $1
 	Usage: $USAGE
-	Try '$FOOTY -h' for more information.
+	Try '$FOOTY -h' for more information
 	EOF
-	exit 1
 }
 
-shorthelp()
+options()
 {
 	cat <<-EOF
-	Usage: $USAGE
-	-s <league>         Prints standings in a league (use league's code or id).
-	-m <+days>|<-days>  Prints upcoming ('+' prefix) or previous ('-' prefix) matches.
-	-l                  Prints all supported leagues.
-	-t <league>         Prints all teams in a league (use league's code or id).
-	-k <api-key>        Saves the api-key to $HOME/.config/footy/api-key.txt
-	-h                  Prints this user documentation.
+	Usage: $FOOTY OPTIONS
+	OPTIONS:
+	  -s <league>   Prints standings in league (use league's code or id)
+	  -m <+/-days>  Prints upcoming ('+' prefix) or previous ('-' prefix) matches 
+	                Must be used with either -l <league> or -t <team>
+	  -l <league>   Specifies league (use league's code or id)
+	  -t <team>     Specifies team (must use team's id)
+	  -I            Prints all supported leagues
+	  -i <league>   Prints all teams in a league (use league's code or id)
+	  -r            Unformatted output for piping to other tools
+	  -k <api-key>  Saves the api-key to $HOME/.config/footy/api-key.txt
+	  -h            Prints this help message
 	EOF
-	exit 0
 }
 
 set_key()
 {
 	mkdir -p $HOME/.config/footy
 	echo "${OPTARG}" > $HOME/.config/footy/api-key.txt
-	exit 0
 }
 
 api_call()
@@ -46,7 +48,6 @@ api_call()
 		echo "$JSON"
 	else
 		echo "$ERROR"
-		exit 1
 	fi
 }
 
@@ -58,97 +59,149 @@ leagues()
 			jq -r '.competitions[] | "\(.area.name),\(.name),\(.code),\(.id),\(.plan)"' | \
 			awk '{ $3 = ($3 == "null" ? "" : $3); $6 = ($5 == "TIER_ONE" ? "Free" : "") } 1' FS="," OFS="," | \
 			cat <(echo "Area,Name,Code,Id,Plan,Price") - | \
-			cut -d ',' -f 1-4,6 | \
-			column -ts ','
+			cut -d ',' -f 1-4,6
 	else
 		1>&2 echo "$JSON"
 	fi
-	exit 0
 }
 
 teams()
 {
-	COMPETITION=${OPTARG}
+	COMPETITION=$1
 	JSON=$(api_call competitions/$COMPETITION/teams)
 	if [ $? -eq 0 ]; then
 		echo "$JSON" | \
 			jq -r '.teams[] | "\(.name),\(.tla),\(.id)"' | \
 			awk '{ $2 = ($2 == "null" ? "" : $2) } 1' FS="," OFS="," | \
-			cat <(echo "Name,Code,Id") - | \
-			column -ts ","
+			cat <(echo "Name,Code,Id") -
 	else
 		1>&2 echo "$JSON"
 	fi
-	exit 0
 }
 
 standings()
 {
-	COMPETITION=${OPTARG}
+	COMPETITION=$1
 	JSON=$(api_call competitions/$COMPETITION/standings)
 	if [ $? -eq 0 ]; then
 		echo "$JSON" | \
 			jq -r '.standings[0].table[] | "\(.position),\(.team.name),\(.playedGames),\(.won),\(.draw),\(.lost),\(.points)"' | \
-			cat <(echo "Pos,Team,P,W,D,L,Pts") - | \
-			column -ts ","
+			cat <(echo "Pos,Team,P,W,D,L,Pts") -
 	else
 		1>&2 echo "$JSON"
 	fi
-	exit 0
 }
 
-matches()
+matches_league()
 {
-	# TODO: add support for teams as well
-	# TODO: format date
-	COMPETITION=BL1
-	SIGN=$(echo "${OPTARG}" | cut -c -1)
-	DAYS=$(echo "${OPTARG}" | cut -c 2-)
-	TODAY=$(date +"%Y-%m-%d")
-	if [ $SIGN = "-" ]; then
-		DATE_FROM=$(date -d "$date -$DAYS days" +"%Y-%m-%d")
-		DATE_TO=$TODAY
-	elif [ $SIGN = "+" ]; then
-		DATE_FROM=$TODAY
-		DATE_TO=$(date -d "$date +$DAYS days" +"%Y-%m-%d")
+	COMPETITION=$1
+	DATE_FROM=$2
+	DATE_TO=$3
+	JSON=$(api_call competitions/$COMPETITION/matches\?dateFrom=$DATE_FROM\&dateTo=$DATE_TO)
+	if [ $? -eq 0 ]; then
+		echo "$JSON" | \
+			jq -r '.matches[] | "\(.utcDate),\(.homeTeam.name),\(.awayTeam.name),\(.score.fullTime.homeTeam):\(.score.fullTime.awayTeam)"' | \
+			awk '{ $4 = ($4 == "null:null" ? "-:-" : $4) } 1' FS="," OFS="," | \
+			# awk '{ $1 = system("date -d " $1 " +'%d %b %H:%M'"); $4 = ($4 == "null:null" ? "-:-" : $4) } 1' FS="," OFS="," | \
+			# awk '{ $1 = $(date -d $1 +"%d %b %H:%M"); $4 = ($4 == "null:null" ? "-:-" : $4) } 1' FS="," OFS="," | \
+			cat <(echo "Date,Home,Away,Score") -
 	else
-		usage
-		exit 1
+		1>&2 echo "$JSON"
 	fi
+}
 
-	curl -sH "$API_KEY" $API/competitions/$COMPETITION/matches\?dateFrom=$DATE_FROM\&dateTo=$DATE_TO | \
-		jq -r '.matches[] | "\(.utcDate),\(.homeTeam.name),\(.awayTeam.name),\(.score.fullTime.homeTeam):\(.score.fullTime.awayTeam)"' | \
-		awk '{ $4 = ($4 == "null:null" ? "-:-" : $4) } 1' FS="," OFS="," | \
-		# awk '{ $1 = $(date -d $1 +"%d %b %H:%M"); $4 = ($4 == "null:null" ? "-:-" : $4) } 1' FS="," OFS="," | \
-		column -ts "," -N Date,Home,Away,Score
-	exit 0
+matches_team()
+{
+	TEAM=$1
+	DATE_FROM=$2
+	DATE_TO=$3
+	JSON=$(api_call teams/$TEAM/matches\?dateFrom=$DATE_FROM\&dateTo=$DATE_TO)
+	if [ $? -eq 0 ]; then
+		echo "$JSON" | \
+			jq -r '.matches[] | "\(.utcDate),\(.homeTeam.name),\(.awayTeam.name),\(.score.fullTime.homeTeam):\(.score.fullTime.awayTeam)"' | \
+			awk '{ $4 = ($4 == "null:null" ? "-:-" : $4) } 1' FS="," OFS="," | \
+			# awk '{ $1 = system("date -d " $1 " +'%d %b %H:%M'"); $4 = ($4 == "null:null" ? "-:-" : $4) } 1' FS="," OFS="," | \
+			# awk '{ $1 = $(date -d $1 +"%d %b %H:%M"); $4 = ($4 == "null:null" ? "-:-" : $4) } 1' FS="," OFS="," | \
+			cat <(echo "Date,Home,Away,Score") -
+	else
+		1>&2 echo "$JSON"
+	fi
 }
 
 # == PROCESS OPTIONS ==
-while getopts ":hk:lt:s:m:" opt; do
+while getopts ":hk:s:m:l:t:rIi:" opt; do
+	INFO_LEAGUES=false
+	RAW=false
 	case "${opt}" in
 		h)
-			shorthelp
+			options
+			exit 0
 			;;
 		k)
 			set_key
-			;;
-		l)
-			leagues
-			;;
-		t)
-			teams
+			exit 0
 			;;
 		s)
-			standings
+			STANDINGS=${OPTARG}
 			;;
 		m)
-			matches
+			MATCHES_DAYS=${OPTARG}
+			;;
+		l)
+			LEAGUE=${OPTARG}
+			;;
+		t)
+			TEAM=${OPTARG}
+			;;
+		r)
+			RAW=true
+			;;
+		I)
+			INFO_LEAGUES=true
+			;;
+		i)
+			INFO_TEAMS=${OPTARG}
 			;;
 		*)
-			usage
+			usage "Unknown option"
+			exit 1
 			;;
 	esac
 done
 
-usage
+if $INFO_LEAGUES; then
+	OUT=$(leagues)
+elif [ -n "$INFO_TEAMS" ]; then
+	OUT=$(teams $INFO_TEAMS)
+elif [ -n "$STANDINGS" ]; then
+	OUT=$(standings $STANDINGS)
+elif [ -n "$MATCHES_DAYS" ]; then
+	TODAY=$(date +"%Y-%m-%d")
+	SIGN=$(echo "$MATCHES_DAYS" | cut -c -1)
+	DAYS=$(echo "$MATCHES_DAYS" | cut -c 2-)
+	if [ "$SIGN" = "-" ]; then
+		DATE_FROM=$(date -d "$date -$DAYS days" +"%Y-%m-%d")
+		DATE_TO=$TODAY
+	elif [ "$SIGN" = "+" ]; then
+		DATE_FROM=$TODAY
+		DATE_TO=$(date -d "$date +$DAYS days" +"%Y-%m-%d")
+	else
+		usage "Invalid number of days format"
+		exit 1
+	fi
+
+	if [[ -n "$LEAGUE" && -n "$TEAM" || -z "$LEAGUE" && -z "$TEAM" ]]; then
+		usage "To use the -m option, you must also use either the -l or -t options to specify a league or team"
+		exit 1
+	elif [ -n "$LEAGUE" ]; then
+		OUT=$(matches_league $LEAGUE $DATE_FROM $DATE_TO)
+	elif [ -n "$TEAM" ]; then
+		OUT=$(matches_team $TEAM $DATE_FROM $DATE_TO)
+	fi
+fi
+
+if $RAW; then
+	echo "$OUT"
+else
+	echo "$OUT" | column -ts ','
+fi
