@@ -56,8 +56,8 @@ OPTIONS:
   -s <league>   Prints standings in league (use league's code or id)
   -m <+/-days>  Prints upcoming ('+' prefix) or previous ('-' prefix) matches 
                 Must be used with either -l <league> or -t <team>
-  -l <league>   Specify league (use league's code or id)
-  -t <team>     Specify team (must use team's id)
+  -l <league>   Specifies league (use league's code or id)
+  -t <team>     Specifies team (must use team's id)
   -I            Prints all supported leagues
   -i <league>   Prints all teams in league (use league's code or id)
   -r            Unformatted output for piping to other tools
