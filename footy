@@ -89,8 +89,6 @@ matches_league()
 	OUT=$(echo "$JSON" | \
 		jq -r '.matches[] | "\(.utcDate),\(.homeTeam.name),\(.awayTeam.name),\(.score.fullTime.homeTeam):\(.score.fullTime.awayTeam)"' | \
 		awk '{ $4 = ($4 == "null:null" ? "-:-" : $4) } 1' FS="," OFS="," | \
-		# awk '{ $1 = system("date -d " $1 " +'%d %b %H:%M'"); $4 = ($4 == "null:null" ? "-:-" : $4) } 1' FS="," OFS="," | \
-		# awk '{ $1 = $(date -d $1 +"%d %b %H:%M"); $4 = ($4 == "null:null" ? "-:-" : $4) } 1' FS="," OFS="," | \
 		cat <(echo "Date,Home,Away,Score") -)
 }
 
@@ -101,8 +99,6 @@ matches_team()
 	OUT=$(echo "$JSON" | \
 		jq -r '.matches[] | "\(.utcDate),\(.homeTeam.name),\(.awayTeam.name),\(.score.fullTime.homeTeam):\(.score.fullTime.awayTeam)"' | \
 		awk '{ $4 = ($4 == "null:null" ? "-:-" : $4) } 1' FS="," OFS="," | \
-		# awk '{ $1 = system("date -d " $1 " +'%d %b %H:%M'"); $4 = ($4 == "null:null" ? "-:-" : $4) } 1' FS="," OFS="," | \
-		# awk '{ $1 = $(date -d $1 +"%d %b %H:%M"); $4 = ($4 == "null:null" ? "-:-" : $4) } 1' FS="," OFS="," | \
 		cat <(echo "Date,Home,Away,Score") -)
 }
 
@@ -154,24 +150,30 @@ elif [ -n "$STANDINGS" ]; then
 	standings $STANDINGS
 elif [ -n "$MATCHES_DAYS" ]; then
 	TODAY=$(date +"%Y-%m-%d")
-	SIGN=$(echo "$MATCHES_DAYS" | cut -c -1)
 	DAYS=$(echo "$MATCHES_DAYS" | cut -c 2-)
-	if [ "$SIGN" = "-" ]; then
-		DATE_FROM=$(date -d "$date -$DAYS days" +"%Y-%m-%d")
-		DATE_TO=$TODAY
-	elif [ "$SIGN" = "+" ]; then
-		DATE_FROM=$TODAY
-		DATE_TO=$(date -d "$date +$DAYS days" +"%Y-%m-%d")
-	else
-		usage "Invalid number of days format"
-	fi
+	case "$(echo "$MATCHES_DAYS" | cut -c -1)" in
+		-)
+			DATE_FROM=$(date -d "$date -$DAYS days" +"%Y-%m-%d")
+			DATE_TO=$TODAY
+			;;
+		+)
+			DATE_FROM=$TODAY
+			DATE_TO=$(date -d "$date +$DAYS days" +"%Y-%m-%d")
+			;;
+		*)
+			usage "Invalid days format"
+			;;
+	esac
 
 	if [[ -n "$LEAGUE" && -n "$TEAM" || -z "$LEAGUE" && -z "$TEAM" ]]; then
-		usage "To use the -m option, you must also use either -l or -t to specify a league or team"
-	elif [ -n "$LEAGUE" ]; then
-		matches_league $LEAGUE $DATE_FROM $DATE_TO
-	elif [ -n "$TEAM" ]; then
-		matches_team $TEAM $DATE_FROM $DATE_TO
+		usage "To use the -m option, you must also use -l or -t to specify a league or team"
+	else
+		if [ -n "$LEAGUE" ]; then
+			matches_league $LEAGUE $DATE_FROM $DATE_TO
+		elif [ -n "$TEAM" ]; then
+			matches_team $TEAM $DATE_FROM $DATE_TO
+		fi
+		$RAW || OUT=$(echo "$OUT" | awk '{ if (NR!=1) { "date -d "$1" +\"%d %b %H:%M\" | tr -d \"\n\"" | getline date; $1 = date } } 1' FS="," OFS=",")
 	fi
 else
 	NOP=true

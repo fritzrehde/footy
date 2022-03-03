@@ -26,7 +26,7 @@
 Since footy uses the data provided by [football-data.org](https://www.football-data.org/), an api-key is required.
 You can register for one [here](https://www.football-data.org/client/register) for free.
 
-Once installed, set the api-key by running `footy -k <api-key>` or manually create the file `$HOME/.config/footy/api-key.txt` containing only the api-key.  
+Once footy is installed, set the api-key by running `footy -k <api-key>` or manually create the file `$HOME/.config/footy/api-key.txt` containing only the api-key.  
 
 ### Build from source
 ```shell
@@ -44,7 +44,7 @@ make install INSTALL_DIR=/usr/bin
 ```
 
 ### Linux
-AUR: *to be added*
+AUR (Arch User Repository): *to be added*
 
 ### MacOS
 Homebrew: *to be added*
