@@ -78,7 +78,7 @@ standings()
 	api_call competitions/$1/standings
 	[ $? -eq 1 ] && exit 1
 	OUT=$(echo "$JSON" | \
-		jq -r '.standings[0].table[] | "\(.position),\(.team.name),\(.playedGames),\(.won),\(.draw),\(.lost),\(.points)"' | \
+		jq -r '.standings[].table[] | "\(.position),\(.team.name),\(.playedGames),\(.won),\(.draw),\(.lost),\(.points)"' | \
 		cat <(echo "Pos,Team,P,W,D,L,Pts") -)
 }
 
