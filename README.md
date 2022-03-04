@@ -13,6 +13,7 @@
 	- [MacOS](#macos)
 - [Usage](#usage)
 	- [Supported leagues and teams](#supported-leagues-and-teams)
+	- [Piping output to other tools](#piping-output-to-other-tools)
 - [Dependencies](#dependencies)
 - [License](#license)
 
