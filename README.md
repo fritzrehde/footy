@@ -74,6 +74,16 @@ Some leagues and teams do not have a *Code*, so you will have to use the *Id* th
 
 **Note**: Access to some of the smaller leagues/teams is paid ([pricing](https://www.football-data.org/coverage)). Therefore, the *Price* column shows which leagues are free.
 
+### Piping output to other tools
+
+The `-r` option provides unformatted output, where the columns are seperated by commas instead of whitespaces and the match dates are in the ISO-8601 format.
+
+#### Example
+```
+footy -s BL1 -r | cut -d ',' -f 1-6,10 | column -ts ','
+```
+This command will only display the first six and the tenth column of the standings output.
+
 ## Dependencies
 
 - [`jq`](https://stedolan.github.io/jq/): JSON processor
