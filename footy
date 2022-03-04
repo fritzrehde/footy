@@ -78,8 +78,8 @@ standings()
 	api_call competitions/$1/standings
 	[ $? -eq 1 ] && exit 1
 	OUT=$(echo "$JSON" | \
-		jq -r '.standings[].table[] | "\(.position),\(.team.name),\(.playedGames),\(.won),\(.draw),\(.lost),\(.points)"' | \
-		cat <(echo "Pos,Team,P,W,D,L,Pts") -)
+		jq -r '.standings[].table[] | "\(.position),\(.team.name),\(.playedGames),\(.won),\(.draw),\(.lost),\(.goalsFor),\(.goalsAgainst),\(.goalDifference),\(.points)"' | \
+		cat <(echo "Pos,Team,P,W,D,L,GF,GA,GD,Pts") -)
 }
 
 matches_league()
