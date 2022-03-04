@@ -77,7 +77,7 @@ Some leagues and teams do not have a *Code*, so you will have to use the *Id* th
 
 ### Piping output to other tools
 
-The `-r` option provides unformatted output, where the columns are seperated by commas instead of whitespaces and the match dates are in the ISO-8601 format.
+The `-r` option provides unformatted output, where the columns are seperated by commas instead of whitespaces and the match dates are in the ISO-8601 UTC format.
 
 #### Example
 ```
