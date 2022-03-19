@@ -4,7 +4,7 @@
 API=https://api.football-data.org/v2
 API_KEY="X-Auth-Token: $(cat $HOME/.config/footy/api-key.txt)"
 FOOTY=$(basename "$0")
-USAGE="$FOOTY [-s <league> | -m <+/-days> | -l <league> | -t <team> | -I | -i <league> | -r | -k <api-key> | -h]"
+USAGE="$FOOTY [-s | -m <+/-days> | -l <league> | -t <team> | -I | -i <league> | -r | -k <api-key> | -h]"
 
 # == FUNCTIONS FOR OPTIONS ==
 usage()
@@ -22,7 +22,8 @@ options()
 	cat <<-EOF
 	Usage: $FOOTY OPTIONS
 	OPTIONS:
-	  -s <league>   Prints standings in league (use league's code or id)
+	  -s            Prints standings/table
+	                Must be used with -l <league>
 	  -m <+/-days>  Prints upcoming ('+' prefix) or previous ('-' prefix) matches 
 	                Must be used with either -l <league> or -t <team>
 	  -l <league>   Specifies league (use league's code or id)
@@ -75,7 +76,7 @@ teams()
 
 standings()
 {
-	api_call competitions/$STANDINGS/standings
+	api_call competitions/$LEAGUE/standings
 	[ $? -eq 1 ] && exit 1
 	OUT=$(echo "$JSON" | \
 		jq -r '.standings[].table[] | "\(.position),\(.team.name),\(.playedGames),\(.won),\(.draw),\(.lost),\(.goalsFor),\(.goalsAgainst),\(.goalDifference),\(.points)"' | \
@@ -103,10 +104,11 @@ matches_team()
 }
 
 # == PROCESS OPTIONS ==
+STANDINGS=false
 INFO_LEAGUES=false
 RAW=false
 NOP=false
-while getopts ":hk:s:m:l:t:rIi:" opt; do
+while getopts ":hk:sm:l:t:rIi:" opt; do
 	case "${opt}" in
 		h)
 			options
@@ -115,7 +117,7 @@ while getopts ":hk:s:m:l:t:rIi:" opt; do
 			set_key
 			;;
 		s)
-			STANDINGS=${OPTARG}
+			STANDINGS=true
 			;;
 		m)
 			MATCHES_DAYS=${OPTARG}
@@ -146,8 +148,12 @@ if $INFO_LEAGUES; then
 	leagues
 elif [ -n "$INFO_TEAMS" ]; then
 	teams
-elif [ -n "$STANDINGS" ]; then
-	standings
+elif $STANDINGS; then
+	if [ -z "$LEAGUE" ]; then
+		usage "To use the -s option, you must also use -l to specify a league"
+	else
+		standings
+	fi
 elif [ -n "$MATCHES_DAYS" ]; then
 	TODAY=$(date +"%Y-%m-%d")
 	DAYS=$(echo "$MATCHES_DAYS" | cut -c 2-)
