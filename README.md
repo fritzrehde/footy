@@ -54,17 +54,17 @@ Homebrew: *to be added*
 ## Usage
 ```text
 OPTIONS:
-	-s            Prints standings/table
-								Must be used with -l <league>
-	-m <+/-days>  Prints upcoming ('+' prefix) or previous ('-' prefix) matches 
-								Must be used with either -l <league> or -t <team>
-	-l <league>   Specifies league (use league's code or id)
-	-t <team>     Specifies team (must use team's id)
-	-I            Prints all supported leagues
-	-i <league>   Prints all teams in league (use league's code or id)
-	-r            Unformatted output for piping to other tools
-	-k <api-key>  Saves the api-key to $HOME/.config/footy/api-key.txt
-	-h            Prints this help message
+  -s            Prints standings/table
+                Must be used with -l <league>
+  -m <+/-days>  Prints upcoming ('+' prefix) or previous ('-' prefix) matches 
+                Must be used with either -l <league> or -t <team>
+  -l <league>   Specifies league (use league's code or id)
+  -t <team>     Specifies team (must use team's id)
+  -I            Prints all supported leagues
+  -i <league>   Prints all teams in league (use league's code or id)
+  -r            Unformatted output for piping to other tools
+  -k <api-key>  Saves the api-key to $HOME/.config/footy/api-key.txt
+  -h            Prints this help message
 ```
 
 ### Supported leagues and teams
