@@ -24,14 +24,14 @@ options()
 	OPTIONS:
 	  -s            Prints standings/table
 	                Must be used with -l <league>
-	  -m <+/-days>  Prints upcoming ('+' prefix) or previous ('-' prefix) matches 
+	  -m <+/-DAYS>  Prints upcoming ('+' prefix) or previous ('-' prefix) matches 
 	                Must be used with either -l <league> or -t <team>
-	  -l <league>   Specifies league (use league's code or id)
-	  -t <team>     Specifies team (must use team's id)
+	  -l <LEAGUE>   Specifies league (use league's code or id)
+	  -t <TEAM>     Specifies team (must use team's id)
 	  -I            Prints all supported leagues
-	  -i <league>   Prints all teams in league (use league's code or id)
+	  -i <LEAGUE>   Prints all teams in league (use league's code or id)
 	  -r            Unformatted output for piping to other tools
-	  -k <api-key>  Saves the api-key to $HOME/.config/footy/api-key.txt
+	  -k <API-KEY>  Saves the api-key to $HOME/.config/footy/api-key.txt
 	  -h            Prints this help message
 	EOF
 	exit 0
@@ -111,35 +111,25 @@ NOP=false
 while getopts ":hk:sm:l:t:rIi:" opt; do
 	case "${opt}" in
 		h)
-			options
-			;;
+			options;;
 		k)
-			set_key
-			;;
+			set_key;;
 		s)
-			STANDINGS=true
-			;;
+			STANDINGS=true;;
 		m)
-			MATCHES_DAYS=${OPTARG}
-			;;
+			MATCHES_DAYS=${OPTARG};;
 		l)
-			LEAGUE=${OPTARG}
-			;;
+			LEAGUE=${OPTARG};;
 		t)
-			TEAM=${OPTARG}
-			;;
+			TEAM=${OPTARG};;
 		r)
-			RAW=true
-			;;
+			RAW=true;;
 		I)
-			INFO_LEAGUES=true
-			;;
+			INFO_LEAGUES=true;;
 		i)
-			INFO_TEAMS=${OPTARG}
-			;;
+			INFO_TEAMS=${OPTARG};;
 		*)
-			usage "Unknown or incomplete option"
-			;;
+			usage "Unknown or incomplete option";;
 	esac
 done
 
