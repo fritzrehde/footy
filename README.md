@@ -44,12 +44,6 @@ sudo make install
 make install INSTALL_DIR=/usr/bin
 ```
 
-### Linux
-AUR (Arch User Repository): *to be added*
-
-### MacOS
-Homebrew: *to be added*
-
 
 ## Usage
 ```text
