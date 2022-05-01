@@ -2,7 +2,7 @@
 
 # == SET VARIABLES ==
 API=https://api.football-data.org/v2
-API_KEY="X-Auth-Token: $(cat $HOME/.config/footy/api-key.txt)"
+API_KEY="X-Auth-Token: $(cat "$HOME"/.config/footy/api-key.txt)"
 FOOTY=$(basename "$0")
 USAGE="$FOOTY [-s | -m <+/-days> | -l <league> | -t <team> | -I | -i <league> | -r | -k <api-key> | -h]"
 
@@ -39,14 +39,14 @@ options()
 
 set_key()
 {
-	mkdir -p $HOME/.config/footy
-	echo "${OPTARG}" > $HOME/.config/footy/api-key.txt
+	mkdir -p "$HOME"/.config/footy
+	echo "${OPTARG}" > "$HOME"/.config/footy/api-key.txt
 	exit 0
 }
 
 api_call()
 {
-	JSON=$(curl -sH "$API_KEY" $API/$1)
+	JSON=$(curl -sH "$API_KEY" "$API"/"$1")
 	ERROR=$(echo "$JSON" | jq -r 'if .message != null then .message else "false" end')
 	if [ "$ERROR" != "false" ]; then
 		1>&2 echo "$ERROR"; exit 1
@@ -66,7 +66,7 @@ leagues()
 
 teams()
 {
-	api_call competitions/$INFO_TEAMS/teams
+	api_call competitions/"$INFO_TEAMS"/teams
 	[ $? -eq 1 ] && exit 1
 	OUT=$(echo "$JSON" | \
 		jq -r '.teams[] | "\(.name),\(.tla),\(.id)"' | \
@@ -76,7 +76,7 @@ teams()
 
 standings()
 {
-	api_call competitions/$LEAGUE/standings
+	api_call competitions/"$LEAGUE"/standings
 	[ $? -eq 1 ] && exit 1
 	OUT=$(echo "$JSON" | \
 		jq -r '.standings[].table[] | "\(.position),\(.team.name),\(.playedGames),\(.won),\(.draw),\(.lost),\(.goalsFor),\(.goalsAgainst),\(.goalDifference),\(.points)"' | \
@@ -85,7 +85,7 @@ standings()
 
 matches_league()
 {
-	api_call competitions/$LEAGUE/matches\?dateFrom=$DATE_FROM\&dateTo=$DATE_TO\&status=$STATUS
+	api_call competitions/"$LEAGUE"/matches\?dateFrom="$DATE_FROM"\&dateTo="$DATE_TO"\&status="$STATUS"
 	[ $? -eq 1 ] && exit 1
 	OUT=$(echo "$JSON" | \
 		jq -r '.matches[] | "\(.utcDate),\(.homeTeam.name),\(.awayTeam.name),\(.score.fullTime.homeTeam):\(.score.fullTime.awayTeam)"' | \
@@ -95,7 +95,7 @@ matches_league()
 
 matches_team()
 {
-	api_call teams/$TEAM/matches\?dateFrom=$DATE_FROM\&dateTo=$DATE_TO\&status=$STATUS
+	api_call teams/"$TEAM"/matches\?dateFrom="$DATE_FROM"\&dateTo="$DATE_TO"\&status="$STATUS"
 	[ $? -eq 1 ] && exit 1
 	OUT=$(echo "$JSON" | \
 		jq -r '.matches[] | "\(.utcDate),\(.homeTeam.name),\(.awayTeam.name),\(.score.fullTime.homeTeam):\(.score.fullTime.awayTeam)"' | \
@@ -149,13 +149,13 @@ elif [ -n "$MATCHES_DAYS" ]; then
 	DAYS=$(echo "$MATCHES_DAYS" | cut -c 2-)
 	case "$(echo "$MATCHES_DAYS" | cut -c -1)" in
 		-)
-			DATE_FROM=$(date -d "$date -$DAYS days" +"%Y-%m-%d")
+			DATE_FROM=$(date -d "$(date -$DAYS days)" +"%Y-%m-%d")
 			DATE_TO=$TODAY
 			STATUS=FINISHED
 			;;
 		+)
 			DATE_FROM=$TODAY
-			DATE_TO=$(date -d "$date +$DAYS days" +"%Y-%m-%d")
+			DATE_TO=$(date -d "$(date +$DAYS days)" +"%Y-%m-%d")
 			STATUS=SCHEDULED
 			;;
 		*)
