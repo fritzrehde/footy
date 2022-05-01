@@ -9,8 +9,6 @@
 - [Features](#features)
 - [Install](#install)
 	- [Build from source](#build-from-source)
-	- [Linux](#linux)
-	- [MacOS](#macos)
 - [Usage](#usage)
 	- [Supported leagues and teams](#supported-leagues-and-teams)
 	- [Piping output to other tools](#piping-output-to-other-tools)
