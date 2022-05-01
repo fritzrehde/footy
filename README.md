@@ -2,7 +2,7 @@
 
 <i>A simple shell script that displays the latest football scores, fixtures and standings.</i>
 
-[![asciicast](https://asciinema.org/a/eZV8muvNTOk6ixiUKTBn5Zhjk.svg)](https://asciinema.org/a/eZV8muvNTOk6ixiUKTBn5Zhjk)
+![asciicast](https://asciinema.org/a/dleQ7INJzcBYh4Q90u3UdOS9y.svg)](https://asciinema.org/a/dleQ7INJzcBYh4Q90u3UdOS9y)
 
 ## Table of Contents
 
