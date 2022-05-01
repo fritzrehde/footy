@@ -23,9 +23,9 @@ options()
 	Usage: $FOOTY OPTIONS
 	OPTIONS:
 	  -s            Prints standings/table
-	                Must be used with -l <league>
+	                Must be used with -l <LEAGUE>
 	  -m <+/-DAYS>  Prints upcoming ('+' prefix) or previous ('-' prefix) matches 
-	                Must be used with either -l <league> or -t <team>
+	                Must be used with either -l <LEAGUE> or -t <TEAM>
 	  -l <LEAGUE>   Specifies league (use league's code or id)
 	  -t <TEAM>     Specifies team (must use team's id)
 	  -I            Prints all supported leagues

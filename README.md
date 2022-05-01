@@ -49,9 +49,9 @@ make install INSTALL_DIR=/usr/bin
 ```text
 OPTIONS:
   -s            Prints standings/table
-                Must be used with -l <league>
+                Must be used with -l <LEAGUE>
   -m <+/-DAYS>  Prints upcoming ('+' prefix) or previous ('-' prefix) matches 
-                Must be used with either -l <league> or -t <team>
+                Must be used with either -l <LEAGUE> or -t <TEAM>
   -l <LEAGUE>   Specifies league (use league's code or id)
   -t <TEAM>     Specifies team (must use team's id)
   -I            Prints all supported leagues
@@ -82,7 +82,7 @@ This command will only display the first six and the tenth column of the standin
 
 ## Dependencies
 
-- [`jq`](https://stedolan.github.io/jq/): JSON processor
+- [`jq`](https://github.com/stedolan/jq): JSON processor
 
 ## License
 
