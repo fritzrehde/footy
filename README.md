@@ -42,6 +42,7 @@ sudo make install
 make install INSTALL_DIR=/usr/bin
 ```
 
+
 ## Usage
 ```text
 OPTIONS:
@@ -57,7 +58,6 @@ OPTIONS:
   -k <API-KEY>  Saves the api-key to $HOME/.config/footy/api-key.txt
   -h            Prints this help message
 ```
-
 
 ### Supported leagues and teams
 `footy -I` gives you an overview of all the supported leagues (I recommend piping the output into a [pager](https://man7.org/linux/man-pages/man1/less.1.html)).

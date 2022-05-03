@@ -2,7 +2,6 @@
 
 # == SET VARIABLES ==
 API=https://api.football-data.org/v2
-API_KEY="X-Auth-Token: $(cat "$HOME"/.config/footy/api-key.txt)"
 FOOTY=$(basename "$0")
 USAGE="$FOOTY [-s | -m <+/-days> | -l <league> | -t <team> | -I | -i <league> | -r | -k <api-key> | -h]"
 
@@ -134,6 +133,8 @@ while getopts ":hk:sm:l:t:rIi:" opt; do
 done
 
 # == CALL FUNCTIONS ==
+API_KEY="X-Auth-Token: $(cat "$HOME"/.config/footy/api-key.txt)"
+
 if $INFO_LEAGUES; then
 	leagues
 elif [ -n "$INFO_TEAMS" ]; then
