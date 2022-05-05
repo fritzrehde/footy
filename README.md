@@ -64,7 +64,7 @@ OPTIONS:
 
 `footy -i BL1` or `footy -i 2002` prints all teams in the Bundesliga using either the *Code* `BL1` or the *Id* `2002`.
 
-Some leagues and teams do not have a *Code*, so you will have to use the *Id* there.
+Some leagues do not have a *Code* and teams never have a *Code*, so you will have to use the *Id* there.
 
 **Note**: Access to some of the smaller leagues/teams is paid ([pricing](https://www.football-data.org/coverage)). Therefore, the *Price* column shows which leagues are free.
 

@@ -68,9 +68,8 @@ teams()
 	api_call competitions/"$INFO_TEAMS"/teams
 	[ $? -eq 1 ] && exit 1
 	OUT=$(echo "$JSON" | \
-		jq -r '.teams[] | "\(.name),\(.tla),\(.id)"' | \
-		awk '{ $2 = ($2 == "null" ? "" : $2) } 1' FS="," OFS="," | \
-		cat <(echo "Name,Code,Id") -)
+		jq -r '.teams[] | "\(.name),\(.id)"' | \
+		cat <(echo "Name,Id") -)
 }
 
 standings()
