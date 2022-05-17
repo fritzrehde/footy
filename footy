@@ -43,6 +43,14 @@ usage()
 	)"
 }
 
+date_diff()
+{
+	# try GNU coreutils, then macOS date command
+	date -d "$2${DAYS} days" +"%Y-%m-%d" 2> /dev/null \
+		|| date -v "$2${DAYS}d" +"%Y-%m-%d" 2> /dev/null \
+		|| error "This system uses an invalid date command."
+}
+
 api_call()
 {
 	JSON=$(curl -sH "$API_KEY" "$API"/"$1")
@@ -154,9 +162,11 @@ elif $STANDINGS; then
 elif [ -n "$MATCHES_DAYS" ]; then
 	TODAY=$(date +"%Y-%m-%d")
 	DAYS=$(echo "${MATCHES_DAYS%?}")
-	case "$(echo "${MATCHES_DAYS: -1}")" in
+	SIGN=$(echo "${MATCHES_DAYS: -1}")
+	case "$SIGN" in
 		-)
-			DATE_FROM=$(date -d "-$DAYS days" +"%Y-%m-%d" 2> /dev/null) || error "This system uses an invalid date command."
+			# DATE_FROM=$(date -d "-$DAYS days" +"%Y-%m-%d" 2> /dev/null) || error "This system uses an invalid date command."
+			DATE_FROM=$(date_diff "$DAYS" "$SIGN") || exit 1
 			DATE_TO=$TODAY
 			STATUS=FINISHED
 			;;
