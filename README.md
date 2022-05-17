@@ -48,7 +48,7 @@ make install INSTALL_DIR=/usr/bin
 OPTIONS:
   -s            Prints standings/table
                 Must be used with -l <LEAGUE>
-  -m <+/-DAYS>  Prints upcoming ('+' prefix) or previous ('-' prefix) matches 
+  -m <DAYS+/->  Prints upcoming ('+' suffix) or previous ('-' suffix) matches
                 Must be used with either -l <LEAGUE> or -t <TEAM>
   -l <LEAGUE>   Specifies league (use league's code or id)
   -t <TEAM>     Specifies team (must use team's id)
@@ -74,7 +74,7 @@ The `-r` option provides unformatted output, where the columns are seperated by 
 
 #### Example
 ```
-footy -s BL1 -r | cut -d ',' -f 1-6,10 | column -ts ','
+footy -s -l BL1 -r | cut -d ',' -f 1-6,10 | column -ts ','
 ```
 This command will only display the first six and the tenth column of the standings output.
 

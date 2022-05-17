@@ -23,7 +23,7 @@ options()
 	OPTIONS:
 	  -s            Prints standings/table
 	                Must be used with -l <LEAGUE>
-	  -m <+/-DAYS>  Prints upcoming ('+' prefix) or previous ('-' prefix) matches 
+	  -m <DAYS+/->  Prints upcoming ('+' suffix) or previous ('-' suffix) matches
 	                Must be used with either -l <LEAGUE> or -t <TEAM>
 	  -l <LEAGUE>   Specifies league (use league's code or id)
 	  -t <TEAM>     Specifies team (must use team's id)
@@ -146,16 +146,16 @@ elif $STANDINGS; then
 	fi
 elif [ -n "$MATCHES_DAYS" ]; then
 	TODAY=$(date +"%Y-%m-%d")
-	DAYS=$(echo "$MATCHES_DAYS" | cut -c 2-)
-	case "$(echo "$MATCHES_DAYS" | cut -c -1)" in
+	DAYS=$(printf "${MATCHES_DAYS%?}")
+	case "$(printf "${MATCHES_DAYS: -1}")" in
 		-)
-			DATE_FROM=$(date -d "$(date -$DAYS days)" +"%Y-%m-%d")
+			DATE_FROM=$(date -d "-$DAYS days" +"%Y-%m-%d")
 			DATE_TO=$TODAY
 			STATUS=FINISHED
 			;;
 		+)
 			DATE_FROM=$TODAY
-			DATE_TO=$(date -d "$(date +$DAYS days)" +"%Y-%m-%d")
+			DATE_TO=$(date -d "+$DAYS days" +"%Y-%m-%d")
 			STATUS=SCHEDULED
 			;;
 		*)
