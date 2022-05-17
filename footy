@@ -156,13 +156,13 @@ elif [ -n "$MATCHES_DAYS" ]; then
 	DAYS=$(echo "${MATCHES_DAYS%?}")
 	case "$(echo "${MATCHES_DAYS: -1}")" in
 		-)
-			DATE_FROM=$(date -d "-$DAYS days" +"%Y-%m-%d" || error "This system uses an invalid date command.")
+			DATE_FROM=$(date -d "-$DAYS days" +"%Y-%m-%d" 2> /dev/null) || error "This system uses an invalid date command."
 			DATE_TO=$TODAY
 			STATUS=FINISHED
 			;;
 		+)
 			DATE_FROM=$TODAY
-			DATE_TO=$(date -d "+$DAYS days" +"%Y-%m-%d" || error "This system uses an invalid date command.")
+			DATE_TO=$(date -d "+$DAYS days" +"%Y-%m-%d" 2> /dev/null) || error "This system uses an invalid date command."
 			STATUS=SCHEDULED
 			;;
 		*)
