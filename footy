@@ -3,19 +3,9 @@
 # == SET VARIABLES ==
 API=https://api.football-data.org/v2
 FOOTY=$(basename "$0")
-USAGE="$FOOTY [-s | -m <+/-days> | -l <league> | -t <team> | -I | -i <league> | -r | -k <api-key> | -h]"
+USAGE="$FOOTY [-l <LEAGUE> | -t <TEAM> | -s | -m <DAYS+/-> | -I | -i <LEAGUE> | -r | -k <API-KEY> | -h]"
 
 # == FUNCTIONS FOR OPTIONS ==
-usage()
-{
-	cat <<-EOF >&2
-	Error: $1
-	Usage: $USAGE
-	Try '$FOOTY -h' for more information
-	EOF
-	exit 1
-}
-
 options()
 {
 	cat <<-EOF
@@ -36,11 +26,21 @@ options()
 	exit 0
 }
 
-set_key()
+error()
 {
-	mkdir -p "$HOME"/.config/footy
-	echo "${OPTARG}" > "$HOME"/.config/footy/api-key.txt
-	exit 0
+	1>&2 echo "Error: $1"
+	exit 1
+}
+
+usage()
+{
+	error "$(
+		cat <<-END
+		$1
+		Usage: $USAGE
+		Try '$FOOTY -h' for more information
+		END
+	)"
 }
 
 api_call()
@@ -48,8 +48,15 @@ api_call()
 	JSON=$(curl -sH "$API_KEY" "$API"/"$1")
 	ERROR=$(echo "$JSON" | jq -r 'if .message != null then .message else "false" end')
 	if [ "$ERROR" != "false" ]; then
-		1>&2 echo "$ERROR"; exit 1
+		error "$ERROR"
 	fi
+}
+
+set_key()
+{
+	mkdir -p "$HOME"/.config/footy
+	echo "${OPTARG}" > "$HOME"/.config/footy/api-key.txt
+	exit 0
 }
 
 leagues()
@@ -146,16 +153,16 @@ elif $STANDINGS; then
 	fi
 elif [ -n "$MATCHES_DAYS" ]; then
 	TODAY=$(date +"%Y-%m-%d")
-	DAYS=$(printf "${MATCHES_DAYS%?}")
-	case "$(printf "${MATCHES_DAYS: -1}")" in
+	DAYS=$(echo "${MATCHES_DAYS%?}")
+	case "$(echo "${MATCHES_DAYS: -1}")" in
 		-)
-			DATE_FROM=$(date -d "-$DAYS days" +"%Y-%m-%d")
+			DATE_FROM=$(date -d "-$DAYS days" +"%Y-%m-%d" || error "This system uses an invalid date command.")
 			DATE_TO=$TODAY
 			STATUS=FINISHED
 			;;
 		+)
 			DATE_FROM=$TODAY
-			DATE_TO=$(date -d "+$DAYS days" +"%Y-%m-%d")
+			DATE_TO=$(date -d "+$DAYS days" +"%Y-%m-%d" || error "This system uses an invalid date command.")
 			STATUS=SCHEDULED
 			;;
 		*)
