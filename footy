@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # == SET VARIABLES ==
-API=https://api.football-data.org/v2
+API=https://api.football-data.org/v4
 FOOTY=$(basename "$0")
 USAGE="$FOOTY [-l <LEAGUE> | -t <TEAM> | -s | -m <DAYS+/-> | -I | -i <LEAGUE> | -r | -k <API-KEY> | -h]"
 
@@ -92,7 +92,7 @@ standings()
 	api_call competitions/"$LEAGUE"/standings
 	[ $? -eq 1 ] && exit 1
 	OUT=$(echo "$JSON" | \
-		jq -r '.standings[].table[] | "\(.position),\(.team.name),\(.playedGames),\(.won),\(.draw),\(.lost),\(.goalsFor),\(.goalsAgainst),\(.goalDifference),\(.points)"' | \
+		jq -r '.standings[0].table[] | "\(.position),\(.team.name),\(.playedGames),\(.won),\(.draw),\(.lost),\(.goalsFor),\(.goalsAgainst),\(.goalDifference),\(.points)"' | \
 		cat <(echo "Pos,Team,P,W,D,L,GF,GA,GD,Pts") -)
 }
 
@@ -101,7 +101,7 @@ matches_league()
 	api_call competitions/"$LEAGUE"/matches\?dateFrom="$DATE_FROM"\&dateTo="$DATE_TO"\&status="$STATUS"
 	[ $? -eq 1 ] && exit 1
 	OUT=$(echo "$JSON" | \
-		jq -r '.matches[] | "\(.utcDate),\(.homeTeam.name),\(.awayTeam.name),\(.score.fullTime.homeTeam):\(.score.fullTime.awayTeam)"' | \
+		jq -r '.matches[] | "\(.utcDate),\(.homeTeam.name),\(.awayTeam.name),\(.score.fullTime.home):\(.score.fullTime.away)"' | \
 		awk '{ $4 = ($4 == "null:null" ? "-:-" : $4) } 1' FS="," OFS="," | \
 		cat <(echo "Date,Home,Away,Score") -)
 }
@@ -111,7 +111,7 @@ matches_team()
 	api_call teams/"$TEAM"/matches\?dateFrom="$DATE_FROM"\&dateTo="$DATE_TO"\&status="$STATUS"
 	[ $? -eq 1 ] && exit 1
 	OUT=$(echo "$JSON" | \
-		jq -r '.matches[] | "\(.utcDate),\(.homeTeam.name),\(.awayTeam.name),\(.score.fullTime.homeTeam):\(.score.fullTime.awayTeam)"' | \
+		jq -r '.matches[] | "\(.utcDate),\(.homeTeam.name),\(.awayTeam.name),\(.score.fullTime.home):\(.score.fullTime.away)"' | \
 		awk '{ $4 = ($4 == "null:null" ? "-:-" : $4) } 1' FS="," OFS="," | \
 		cat <(echo "Date,Home,Away,Score") -)
 }
