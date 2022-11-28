@@ -3,24 +3,24 @@
 # == SET VARIABLES ==
 API=https://api.football-data.org/v4
 FOOTY=$(basename "$0")
-USAGE="$FOOTY [-l <LEAGUE> | -t <TEAM> | -s | -m <DAYS+/-> | -I | -i <LEAGUE> | -r | -k <API-KEY> | -h]"
+USAGE="$FOOTY [-c <COMPETITION> | -t <TEAM> | -s | -m <DAYS+/-> | -I | -i <COMPETITION> | -r | -k <API-KEY> | -h]"
 
 # == FUNCTIONS FOR OPTIONS ==
 options() {
 	cat <<-EOF
 	Usage: $FOOTY OPTIONS
 	OPTIONS:
-	  -s            Prints standings/table
-	                Must be used with -l <LEAGUE>
-	  -m <DAYS+/->  Prints upcoming ('+' suffix) or previous ('-' suffix) matches
-	                Must be used with either -l <LEAGUE> or -t <TEAM>
-	  -l <LEAGUE>   Specifies league (use league's code or id)
-	  -t <TEAM>     Specifies team (must use team's id)
-	  -I            Prints all supported leagues
-	  -i <LEAGUE>   Prints all teams in league (use league's code or id)
-	  -r            Unformatted output for piping to other tools
-	  -k <API-KEY>  Saves the api-key to $HOME/.config/footy/api-key.txt
-	  -h            Prints this help message
+	  -s                Prints standings/table
+	                    Must be used with -c <COMPETITION>
+	  -m <DAYS+/->      Prints upcoming ('+' suffix) or previous ('-' suffix) matches
+	                    Must be used with either -c <COMPETITION> or -t <TEAM>
+	  -c <COMPETITION>  Specifies competition (use code or id)
+	  -t <TEAM>         Specifies team (must use team's id)
+	  -I                Prints all supported competitions
+	  -i <COMPETITION>  Prints all teams in competition (use code or id)
+	  -r                Unformatted output for piping to other tools
+	  -k <API-KEY>      Saves the api-key to $HOME/.config/footy/api-key.txt
+	  -h                Prints this help message
 	EOF
 	exit 0
 }
@@ -48,10 +48,11 @@ date_diff() {
 }
 
 api_call() {
-	JSON=$(curl -sH "$API_KEY" "$API"/"$1")
+	JSON=$(curl -sH "$API_KEY" "$API/$1")
 	ERROR=$(echo "$JSON" | jq -r 'if .message != null then .message else "false" end')
 	if [ "$ERROR" != "false" ]; then
 		error "$ERROR"
+		exit 1
 	fi
 }
 
@@ -61,9 +62,8 @@ set_key() {
 	exit 0
 }
 
-leagues() {
+competitions() {
 	api_call competitions
-	[ $? -eq 1 ] && exit 1
 	OUT=$(echo "$JSON" | \
 		jq -r '.competitions[] | "\(.area.name),\(.name),\(.code),\(.id),\(.plan)"' | \
 		awk '{ $3 = ($3 == "null" ? "" : $3); $6 = ($5 == "TIER_ONE" ? "Free" : "") } 1' FS="," OFS="," | \
@@ -73,23 +73,23 @@ leagues() {
 
 teams() {
 	api_call competitions/"$INFO_TEAMS"/teams
-	[ $? -eq 1 ] && exit 1
+	# [ $? -eq 1 ] && exit 1
 	OUT=$(echo "$JSON" | \
 		jq -r '.teams[] | "\(.name),\(.id)"' | \
 		cat <(echo "Name,Id") -)
 }
 
 standings() {
-	api_call competitions/"$LEAGUE"/standings
-	[ $? -eq 1 ] && exit 1
+	api_call competitions/"$COMPETITION"/standings
+	# [ $? -eq 1 ] && exit 1
 	OUT=$(echo "$JSON" | \
 		jq -r '.standings[0].table[] | "\(.position),\(.team.name),\(.playedGames),\(.won),\(.draw),\(.lost),\(.goalsFor),\(.goalsAgainst),\(.goalDifference),\(.points)"' | \
 		cat <(echo "Pos,Team,P,W,D,L,GF,GA,GD,Pts") -)
 }
 
-matches_league() {
-	api_call competitions/"$LEAGUE"/matches\?dateFrom="$DATE_FROM"\&dateTo="$DATE_TO"\&status="$STATUS"
-	[ $? -eq 1 ] && exit 1
+matches_competition() {
+	api_call competitions/"$COMPETITION"/matches\?dateFrom="$DATE_FROM"\&dateTo="$DATE_TO"\&status="$STATUS"
+	# [ $? -eq 1 ] && exit 1
 	OUT=$(echo "$JSON" | \
 		jq -r '.matches[] | "\(.utcDate),\(.homeTeam.name),\(.awayTeam.name),\(.score.fullTime.home):\(.score.fullTime.away)"' | \
 		awk '{ $4 = ($4 == "null:null" ? "-:-" : $4) } 1' FS="," OFS="," | \
@@ -98,7 +98,7 @@ matches_league() {
 
 matches_team() {
 	api_call teams/"$TEAM"/matches\?dateFrom="$DATE_FROM"\&dateTo="$DATE_TO"\&status="$STATUS"
-	[ $? -eq 1 ] && exit 1
+	# [ $? -eq 1 ] && exit 1
 	OUT=$(echo "$JSON" | \
 		jq -r '.matches[] | "\(.utcDate),\(.homeTeam.name),\(.awayTeam.name),\(.score.fullTime.home):\(.score.fullTime.away)"' | \
 		awk '{ $4 = ($4 == "null:null" ? "-:-" : $4) } 1' FS="," OFS="," | \
@@ -107,10 +107,10 @@ matches_team() {
 
 # == PROCESS OPTIONS ==
 STANDINGS=false
-INFO_LEAGUES=false
+INFO_COMPETITIONS=false
 RAW=false
 NOP=false
-while getopts ":hk:sm:l:t:rIi:" opt; do
+while getopts ":hk:sm:c:t:rIi:" opt; do
 	case "${opt}" in
 		h)
 			options;;
@@ -120,14 +120,14 @@ while getopts ":hk:sm:l:t:rIi:" opt; do
 			STANDINGS=true;;
 		m)
 			MATCHES_DAYS=${OPTARG};;
-		l)
-			LEAGUE=${OPTARG};;
+		c)
+			COMPETITION=${OPTARG};;
 		t)
 			TEAM=${OPTARG};;
 		r)
 			RAW=true;;
 		I)
-			INFO_LEAGUES=true;;
+			INFO_COMPETITIONS=true;;
 		i)
 			INFO_TEAMS=${OPTARG};;
 		*)
@@ -138,13 +138,13 @@ done
 # == CALL FUNCTIONS ==
 API_KEY="X-Auth-Token: $(cat "$HOME"/.config/footy/api-key.txt)"
 
-if $INFO_LEAGUES; then
-	leagues
+if $INFO_COMPETITIONS; then
+	competitions
 elif [ -n "$INFO_TEAMS" ]; then
 	teams
 elif $STANDINGS; then
-	if [ -z "$LEAGUE" ]; then
-		usage "To use the -s option, you must also use -l to specify a league"
+	if [ -z "$COMPETITION" ]; then
+		usage "To use the -s option, you must also use -c to specify a competition"
 	else
 		standings
 	fi
@@ -170,11 +170,11 @@ elif [ -n "$MATCHES_DAYS" ]; then
 			;;
 	esac
 
-	if [[ -n "$LEAGUE" && -n "$TEAM" || -z "$LEAGUE" && -z "$TEAM" ]]; then
-		usage "To use the -m option, you must also use -l or -t to specify a league or team"
+	if [[ -n "$COMPETITION" && -n "$TEAM" || -z "$COMPETITION" && -z "$TEAM" ]]; then
+		usage "To use the -m option, you must also use -c or -t to specify a competition or team"
 	else
-		if [ -n "$LEAGUE" ]; then
-			matches_league
+		if [ -n "$COMPETITION" ]; then
+			matches_competition
 		elif [ -n "$TEAM" ]; then
 			matches_team
 		fi

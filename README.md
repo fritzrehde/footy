@@ -10,7 +10,7 @@
 - [Install](#install)
 	- [Build from source](#build-from-source)
 - [Usage](#usage)
-	- [Supported leagues and teams](#supported-leagues-and-teams)
+	- [Supported competitions and teams](#supported-competitions-and-teams)
 	- [Piping output to other tools](#piping-output-to-other-tools)
 - [Dependencies](#dependencies)
 - [License](#license)
@@ -46,27 +46,27 @@ make install INSTALL_DIR=/usr/bin
 ## Usage
 ```text
 OPTIONS:
-  -s            Prints standings/table
-                Must be used with -l <LEAGUE>
-  -m <DAYS+/->  Prints upcoming ('+' suffix) or previous ('-' suffix) matches
-                Must be used with either -l <LEAGUE> or -t <TEAM>
-  -l <LEAGUE>   Specifies league (use league's code or id)
-  -t <TEAM>     Specifies team (must use team's id)
-  -I            Prints all supported leagues
-  -i <LEAGUE>   Prints all teams in league (use league's code or id)
-  -r            Unformatted output for piping to other tools
-  -k <API-KEY>  Saves the api-key to $HOME/.config/footy/api-key.txt
-  -h            Prints this help message
+  -s                Prints standings/table
+                    Must be used with -c <COMPETITION>
+  -m <DAYS+/->      Prints upcoming ('+' suffix) or previous ('-' suffix) matches
+                    Must be used with either -c <COMPETITION> or -t <TEAM>
+  -c <COMPETITION>  Specifies competition (use code or id)
+  -t <TEAM>         Specifies team (must use team's id)
+  -I                Prints all supported competitions
+  -i <COMPETITION>  Prints all teams in competition (use code or id)
+  -r                Unformatted output for piping to other tools
+  -k <API-KEY>      Saves the api-key to $HOME/.config/footy/api-key.txt
+  -h                Prints this help message
 ```
 
-### Supported leagues and teams
-`footy -I` gives you an overview of all the supported leagues (I recommend piping the output into a [pager](https://man7.org/linux/man-pages/man1/less.1.html)).
+### Supported competitions and teams
+`footy -I` gives you an overview of all the supported competitions (I recommend piping the output into a [pager](https://man7.org/linux/man-pages/man1/less.1.html)).
 
 `footy -i BL1` or `footy -i 2002` prints all teams in the Bundesliga using either the *Code* `BL1` or the *Id* `2002`.
 
-Some leagues do not have a *Code* and teams never have a *Code*, so you will have to use the *Id* there.
+Some competitions do not have a *Code* and teams never have a *Code*, so you will have to use the *Id* there.
 
-**Note**: Access to some of the smaller leagues/teams is paid ([pricing](https://www.football-data.org/coverage)). Therefore, the *Price* column shows which leagues are free.
+**Note**: Access to some of the smaller competitions/teams is paid ([pricing](https://www.football-data.org/coverage)). Therefore, the *Price* column shows which competitions are free.
 
 ### Piping output to other tools
 
