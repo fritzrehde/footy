@@ -71,11 +71,6 @@ competitions() {
 		| cut -d ',' -f 1-4,6)
 }
 
-# return LEAGUE or CUP
-competition_type() {
-	echo "$JSON" | jq -r '.competition.type'
-}
-
 teams() {
 	api_call "competitions/$INFO_TEAMS/teams"
 	OUT=$(echo "$JSON" \
@@ -85,43 +80,42 @@ teams() {
 
 standings() {
 	api_call "competitions/$COMPETITION/standings"
-	case "$(competition_type)" in
+	case "$(echo "$JSON" | jq -r '.competition.type')" in
 		LEAGUE)
 			OUT=$(echo "$JSON" \
 				| jq -r '.standings[0].table[] | "\(.position),\(.team.name),\(.playedGames),\(.won),\(.draw),\(.lost),\(.goalsFor),\(.goalsAgainst),\(.goalDifference),\(.points)"' \
 				| cat <(echo "Pos,Team,P,W,D,L,GF,GA,GD,Pts") -)
 			;;
 		CUP)
+			# TODO: case statement group stage or final stage
+			newline=$'\n'
+			OUT="Group,Pos,Team,P,W,D,L,GF,GA,GD,Pts"
+			NUM_GROUPS="$(echo "$JSON" | jq -r '.standings | length')"
+			GROUP=0
+			while [ "$GROUP" -lt "$NUM_GROUPS" ]; do
+				GROUP_NAME="$(echo "$JSON" | jq -r ".standings[${GROUP}].group" | cut -d "_" -f 2)"
+				OUT+="${newline}$(echo "$JSON" \
+					| jq -r ".standings[${GROUP}].table[] | \"${GROUP_NAME},\(.position),\(.team.name),\(.playedGames),\(.won),\(.draw),\(.lost),\(.goalsFor),\(.goalsAgainst),\(.goalDifference),\(.points)\"")"
+				GROUP=$((GROUP+1))
+			done
 			;;
 	esac
 }
 
 matches_competition() {
 	api_call "competitions/$COMPETITION/matches?dateFrom=$DATE_FROM&dateTo=$DATE_TO&status=$STATUS"
-	case "$(competition_type)" in
-		LEAGUE)
-			OUT=$(echo "$JSON" \
-				| jq -r '.matches[] | "\(.utcDate),\(.homeTeam.name),\(.awayTeam.name),\(.score.fullTime.home):\(.score.fullTime.away)"' \
-				| awk '{ $4 = ($4 == "null:null" ? "-:-" : $4) } 1' FS="," OFS="," \
-				| cat <(echo "Date,Home,Away,Score") -)
-			;;
-		CUP)
-			;;
-	esac
+	OUT=$(echo "$JSON" \
+		| jq -r '.matches[] | "\(.utcDate),\(.homeTeam.name),\(.awayTeam.name),\(.score.fullTime.home):\(.score.fullTime.away)"' \
+		| awk '{ $4 = ($4 == "null:null" ? "-:-" : $4) } 1' FS="," OFS="," \
+		| cat <(echo "Date,Home,Away,Score") -)
 }
 
 matches_team() {
 	api_call "teams/$TEAM/matches?dateFrom=$DATE_FROM&dateTo=$DATE_TO&status=$STATUS"
-	case "$(competition_type)" in
-		LEAGUE)
-			OUT=$(echo "$JSON" \
-				| jq -r '.matches[] | "\(.utcDate),\(.homeTeam.name),\(.awayTeam.name),\(.score.fullTime.home):\(.score.fullTime.away)"' \
-				| awk '{ $4 = ($4 == "null:null" ? "-:-" : $4) } 1' FS="," OFS="," \
-				| cat <(echo "Date,Home,Away,Score") -)
-			;;
-		CUP)
-			;;
-	esac
+	OUT=$(echo "$JSON" \
+		| jq -r '.matches[] | "\(.utcDate),\(.homeTeam.name),\(.awayTeam.name),\(.score.fullTime.home):\(.score.fullTime.away)"' \
+		| awk '{ $4 = ($4 == "null:null" ? "-:-" : $4) } 1' FS="," OFS="," \
+		| cat <(echo "Date,Home,Away,Score") -)
 }
 
 # == PROCESS OPTIONS ==
