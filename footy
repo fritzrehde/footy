@@ -6,8 +6,7 @@ FOOTY=$(basename "$0")
 USAGE="$FOOTY [-l <LEAGUE> | -t <TEAM> | -s | -m <DAYS+/-> | -I | -i <LEAGUE> | -r | -k <API-KEY> | -h]"
 
 # == FUNCTIONS FOR OPTIONS ==
-options()
-{
+options() {
 	cat <<-EOF
 	Usage: $FOOTY OPTIONS
 	OPTIONS:
@@ -26,14 +25,12 @@ options()
 	exit 0
 }
 
-error()
-{
-	1>&2 echo "Error: $1"
+error() {
+	echo "Error: $1" 1>&2
 	exit 1
 }
 
-usage()
-{
+usage() {
 	error "$(
 		cat <<-END
 		$1
@@ -43,16 +40,14 @@ usage()
 	)"
 }
 
-date_diff()
-{
+date_diff() {
 	# try GNU coreutils, then macOS date command
 	date -d "$2${DAYS} days" +"%Y-%m-%d" 2> /dev/null \
 		|| date -v "$2${DAYS}d" +"%Y-%m-%d" 2> /dev/null \
 		|| error "This system uses an invalid date command."
 }
 
-api_call()
-{
+api_call() {
 	JSON=$(curl -sH "$API_KEY" "$API"/"$1")
 	ERROR=$(echo "$JSON" | jq -r 'if .message != null then .message else "false" end')
 	if [ "$ERROR" != "false" ]; then
@@ -60,15 +55,13 @@ api_call()
 	fi
 }
 
-set_key()
-{
+set_key() {
 	mkdir -p "$HOME"/.config/footy
 	echo "${OPTARG}" > "$HOME"/.config/footy/api-key.txt
 	exit 0
 }
 
-leagues()
-{
+leagues() {
 	api_call competitions
 	[ $? -eq 1 ] && exit 1
 	OUT=$(echo "$JSON" | \
@@ -78,8 +71,7 @@ leagues()
 		cut -d ',' -f 1-4,6)
 }
 
-teams()
-{
+teams() {
 	api_call competitions/"$INFO_TEAMS"/teams
 	[ $? -eq 1 ] && exit 1
 	OUT=$(echo "$JSON" | \
@@ -87,8 +79,7 @@ teams()
 		cat <(echo "Name,Id") -)
 }
 
-standings()
-{
+standings() {
 	api_call competitions/"$LEAGUE"/standings
 	[ $? -eq 1 ] && exit 1
 	OUT=$(echo "$JSON" | \
@@ -96,8 +87,7 @@ standings()
 		cat <(echo "Pos,Team,P,W,D,L,GF,GA,GD,Pts") -)
 }
 
-matches_league()
-{
+matches_league() {
 	api_call competitions/"$LEAGUE"/matches\?dateFrom="$DATE_FROM"\&dateTo="$DATE_TO"\&status="$STATUS"
 	[ $? -eq 1 ] && exit 1
 	OUT=$(echo "$JSON" | \
@@ -106,8 +96,7 @@ matches_league()
 		cat <(echo "Date,Home,Away,Score") -)
 }
 
-matches_team()
-{
+matches_team() {
 	api_call teams/"$TEAM"/matches\?dateFrom="$DATE_FROM"\&dateTo="$DATE_TO"\&status="$STATUS"
 	[ $? -eq 1 ] && exit 1
 	OUT=$(echo "$JSON" | \
