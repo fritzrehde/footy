@@ -48,8 +48,8 @@ date_diff() {
 }
 
 api_call() {
-	JSON=$(curl -sH "$API_KEY" "$API/$1")
-	ERROR=$(echo "$JSON" | jq -r 'if .message != null then .message else "false" end')
+	JSON="$(curl -sH "$API_KEY" "$API/$1")"
+	ERROR="$(echo "$JSON" | jq -r 'if .message != null then .message else "false" end')"
 	if [ "$ERROR" != "false" ]; then
 		error "$ERROR"
 		exit 1
@@ -57,13 +57,13 @@ api_call() {
 }
 
 set_key() {
-	mkdir -p "$HOME"/.config/footy
-	echo "${OPTARG}" > "$HOME"/.config/footy/api-key.txt
+	mkdir -p "$HOME/.config/footy"
+	echo "${OPTARG}" > "$HOME/.config/footy/api-key.txt"
 	exit 0
 }
 
 competitions() {
-	api_call competitions
+	api_call "competitions"
 	OUT=$(echo "$JSON" | \
 		jq -r '.competitions[] | "\(.area.name),\(.name),\(.code),\(.id),\(.plan)"' | \
 		awk '{ $3 = ($3 == "null" ? "" : $3); $6 = ($5 == "TIER_ONE" ? "Free" : "") } 1' FS="," OFS="," | \
@@ -72,24 +72,21 @@ competitions() {
 }
 
 teams() {
-	api_call competitions/"$INFO_TEAMS"/teams
-	# [ $? -eq 1 ] && exit 1
+	api_call "competitions/$INFO_TEAMS/teams"
 	OUT=$(echo "$JSON" | \
 		jq -r '.teams[] | "\(.name),\(.id)"' | \
 		cat <(echo "Name,Id") -)
 }
 
 standings() {
-	api_call competitions/"$COMPETITION"/standings
-	# [ $? -eq 1 ] && exit 1
+	api_call "competitions/$COMPETITION/standings"
 	OUT=$(echo "$JSON" | \
 		jq -r '.standings[0].table[] | "\(.position),\(.team.name),\(.playedGames),\(.won),\(.draw),\(.lost),\(.goalsFor),\(.goalsAgainst),\(.goalDifference),\(.points)"' | \
 		cat <(echo "Pos,Team,P,W,D,L,GF,GA,GD,Pts") -)
 }
 
 matches_competition() {
-	api_call competitions/"$COMPETITION"/matches\?dateFrom="$DATE_FROM"\&dateTo="$DATE_TO"\&status="$STATUS"
-	# [ $? -eq 1 ] && exit 1
+	api_call "competitions/$COMPETITION/matches?dateFrom=$DATE_FROM&dateTo=$DATE_TO&status=$STATUS"
 	OUT=$(echo "$JSON" | \
 		jq -r '.matches[] | "\(.utcDate),\(.homeTeam.name),\(.awayTeam.name),\(.score.fullTime.home):\(.score.fullTime.away)"' | \
 		awk '{ $4 = ($4 == "null:null" ? "-:-" : $4) } 1' FS="," OFS="," | \
@@ -97,8 +94,7 @@ matches_competition() {
 }
 
 matches_team() {
-	api_call teams/"$TEAM"/matches\?dateFrom="$DATE_FROM"\&dateTo="$DATE_TO"\&status="$STATUS"
-	# [ $? -eq 1 ] && exit 1
+	api_call "teams/$TEAM/matches?dateFrom=$DATE_FROM&dateTo=$DATE_TO&status=$STATUS"
 	OUT=$(echo "$JSON" | \
 		jq -r '.matches[] | "\(.utcDate),\(.homeTeam.name),\(.awayTeam.name),\(.score.fullTime.home):\(.score.fullTime.away)"' | \
 		awk '{ $4 = ($4 == "null:null" ? "-:-" : $4) } 1' FS="," OFS="," | \

@@ -74,7 +74,7 @@ The `-r` option provides unformatted output, where the columns are seperated by 
 
 #### Example
 ```
-footy -s -l BL1 -r | cut -d ',' -f 1-6,10 | column -ts ','
+footy -s -c BL1 -r | cut -d ',' -f 1-6,10 | column -ts ','
 ```
 This command will only display the first six and the tenth column of the standings output.
 
